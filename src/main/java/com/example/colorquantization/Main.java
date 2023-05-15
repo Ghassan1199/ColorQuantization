@@ -108,7 +108,7 @@ public class Main extends Application {
                 for (Color color : colors) {
                     for (int i = 0; i < rectWidth; i++) {
                         for (int j = 0; j < recHeight; j++) {
-                            image.setRGB( j, x +i, color.getRGB());
+                            image.setRGB(j, x + i, color.getRGB());
                         }
                     }
                     x += rectWidth;

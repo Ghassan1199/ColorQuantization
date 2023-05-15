@@ -40,7 +40,7 @@ public class Main extends Application {
     File newImageFile;
     Scene scene;
     TextField numberId;
-    Button addImageButton, applyButton, saveImageButton, colorPaletteBtn;
+    Button addImageButton, applyButton, saveImageButton, colorPaletteBtn, histogramBtn;
     ImageView original, edited;
     ChoiceBox<Algorithms> choiceBox;
 
@@ -58,6 +58,8 @@ public class Main extends Application {
         applyButton = (Button) scene.lookup("#applyButton");
         colorPaletteBtn = (Button) scene.lookup("#colorPaletteBtn");
         saveImageButton = (Button) scene.lookup("#saveImageButton");
+        histogramBtn = (Button) scene.lookup("#histogramBtn");
+
         choiceBox = (ChoiceBox<Algorithms>) scene.lookup("#choiceBox");
         numberId = (TextField) scene.lookup("#numberId");
 
@@ -75,6 +77,7 @@ public class Main extends Application {
         applyButton.setOnAction(applyAlgorithm());
         saveImageButton.setOnAction(saveNewImage(stage));
         colorPaletteBtn.setOnAction(openColorPalette());
+        histogramBtn.setOnAction(openColorHistogram());
 
     }
 
@@ -95,6 +98,15 @@ public class Main extends Application {
         });
     }
 
+    private Action openColorHistogram() {
+        return new Action(e -> {
+            try {
+                ColorHistogram.MakeColorHistogram(newImageFile.getPath());
+            } catch (Exception ex) {
+                throw new RuntimeException(ex);
+            }
+        });
+    }
 
     private Action openColorPalette() {
         return new Action(e -> {

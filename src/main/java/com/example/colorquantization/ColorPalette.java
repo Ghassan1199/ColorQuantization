@@ -6,6 +6,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashSet;
 
 public class ColorPalette {
@@ -33,7 +34,8 @@ public class ColorPalette {
         colorSet.toArray(colorArray);
 
         // Sort the array by RGB values
-        Arrays.sort(colorArray, (a, b) -> Integer.compare(a.getRGB(), b.getRGB()));
+        Arrays.sort(colorArray, Comparator.comparingInt(Color::getRGB));
+        System.out.println(colorArray.length);
 
         // Return the sorted array as the color palette
         return colorArray;

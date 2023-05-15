@@ -40,7 +40,7 @@ public class Main extends Application {
     File newImageFile;
     Scene scene;
     TextField numberId;
-    Button addImageButton, applyButton, saveImageButton;
+    Button addImageButton, applyButton, saveImageButton, colorPaletteBtn;
     ImageView original, edited;
     ChoiceBox<Algorithms> choiceBox;
 
@@ -56,6 +56,7 @@ public class Main extends Application {
         edited = (ImageView) scene.lookup("#edited");
         addImageButton = (Button) scene.lookup("#addImage");
         applyButton = (Button) scene.lookup("#applyButton");
+        colorPaletteBtn = (Button) scene.lookup("#colorPaletteBtn");
         saveImageButton = (Button) scene.lookup("#saveImageButton");
         choiceBox = (ChoiceBox<Algorithms>) scene.lookup("#choiceBox");
         numberId = (TextField) scene.lookup("#numberId");
@@ -73,6 +74,7 @@ public class Main extends Application {
         addImageButton.setOnAction(selectImageAction(stage));
         applyButton.setOnAction(applyAlgorithm());
         saveImageButton.setOnAction(saveNewImage(stage));
+        colorPaletteBtn.setOnAction(openColorPalette());
 
     }
 
@@ -93,6 +95,40 @@ public class Main extends Application {
         });
     }
 
+
+    private Action openColorPalette() {
+        return new Action(e -> {
+            BufferedImage image = new BufferedImage(1280, 1280, BufferedImage.TYPE_INT_RGB);
+            try {
+                int x = 0;
+                Color[] colors = ColorPalette.getColorPalette(newImageFile.getPath());
+                int rectWidth = 1280 / colors.length;
+                int recHeight = 1280;
+
+                for (Color color : colors) {
+                    for (int i = 0; i < rectWidth; i++) {
+                        for (int j = 0; j < recHeight; j++) {
+                            image.setRGB( j, x +i, color.getRGB());
+                        }
+                    }
+                    x += rectWidth;
+
+                }
+                ImageIO.write(image, "png", new File("colorPalette.png"));
+                File file = new File("colorPalette.png");
+                String[] commands = {
+                        "cmd.exe", "/c", "start", "\"DummyTitle\"", "\"" + file.getAbsolutePath() + "\""
+                };
+                Process p = Runtime.getRuntime().exec(commands);
+                p.waitFor();
+
+            } catch (Exception s) {
+                s.printStackTrace();
+            }
+
+
+        });
+    }
 
     private Action applyAlgorithm() {
         return new Action(e -> {
@@ -129,7 +165,7 @@ public class Main extends Application {
 
                 case MEDIAN_CUT -> {
                     try {
-                        File newImageFile = MedianCut.reduceColors(imgPath, targetColor, editedPath + Algorithms.MEDIAN_CUT.name() + "\\");
+                        newImageFile = MedianCut.reduceColors(imgPath, targetColor, editedPath + Algorithms.MEDIAN_CUT.name() + "\\");
                         newImage = new Image("file:" + newImageFile.getPath());
 
                     } catch (IOException x) {
@@ -139,7 +175,7 @@ public class Main extends Application {
 
                 case UNIFORM_COLOR -> {
                     try {
-                        File newImageFile = UniformColor.start(imgPath, targetColor, editedPath + Algorithms.UNIFORM_COLOR.name() + "\\");
+                        newImageFile = UniformColor.start(imgPath, targetColor, editedPath + Algorithms.UNIFORM_COLOR.name() + "\\");
                         newImage = new Image("file:" + newImageFile.getPath());
                     } catch (IOException ex) {
                         throw new RuntimeException(ex);

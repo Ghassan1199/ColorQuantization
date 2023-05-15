@@ -30,8 +30,8 @@ public class Main extends Application {
 
     }
 
-    final String originalPath = "C:\\Users\\Ghassan\\Desktop\\Collage\\Media\\ColorQuantization\\src\\main\\resources\\com\\example\\colorquantization\\pics\\originals\\";
-    final String editedPath = "C:\\Users\\Ghassan\\Desktop\\Collage\\Media\\ColorQuantization\\src\\main\\resources\\com\\example\\colorquantization\\pics\\Edited\\";
+    final String originalPath = System.getProperty("user.dir")+"\\src\\main\\resources\\com\\example\\colorquantization\\pics\\originals\\";
+    final String editedPath = System.getProperty("user.dir")+"\\src\\main\\resources\\com\\example\\colorquantization\\pics\\Edited\\";
     final float screenWidth = Toolkit.getDefaultToolkit().getScreenSize().width;
     final float screenHeight = Toolkit.getDefaultToolkit().getScreenSize().height;
 
@@ -47,7 +47,7 @@ public class Main extends Application {
 
     @Override
     public void start(Stage stage) throws IOException {
-
+        System.out.println(System.getProperty("user.dir"));
 
         FXMLLoader fxmlLoader = new FXMLLoader(Main.class.getResource("main-view.fxml"));
         scene = new Scene(fxmlLoader.load(), screenWidth / 2, screenHeight / 2);

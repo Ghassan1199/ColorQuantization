@@ -33,5 +33,7 @@
         <ChoiceBox fx:id="choiceBox" layoutX="14.0" layoutY="23.0" prefWidth="150.0" />
         <Label layoutX="44.0" layoutY="6.0" text="Select Algorithim" />
         <Button fx:id="applyButton" layoutX="328.0" layoutY="324.0" mnemonicParsing="false" text="Apply Algorithim" />
+      <TextField fx:id="numberId" layoutX="339.0" layoutY="36.0" prefHeight="25.0" prefWidth="84.0" />
+      <Label layoutX="348.0" layoutY="15.0" text="Target Color" />
     </children>
 </Pane>

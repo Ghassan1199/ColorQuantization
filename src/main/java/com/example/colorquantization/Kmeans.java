@@ -10,7 +10,7 @@ import java.util.List;
 
 public class Kmeans {
 
-    public static File start(String originalImagePath, String newImagePath) {
+    public static File start(String originalImagePath, String newImagePath, int k) {
         try {
             // Load the image
             File imageFile = new File(originalImagePath);
@@ -18,7 +18,6 @@ public class Kmeans {
             System.out.println("reading image is done");
 
             // Perform color quantization with k-means
-            int k = 16;
             java.util.List<Color> colors = getColors(image);
             System.out.println("analays stage done");
 
@@ -65,6 +64,7 @@ public class Kmeans {
 
             // Save the quantized image to a file
             File outputImageFile = new File(newImagePath + "KMEANS" + imageFile.getName());
+            System.out.println("OUTPUT " + outputImageFile.getPath());
             ImageIO.write(quantizedImage, "png", outputImageFile);
             return outputImageFile;
 

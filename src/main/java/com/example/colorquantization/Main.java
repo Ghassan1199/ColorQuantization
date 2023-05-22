@@ -2,6 +2,8 @@ package com.example.colorquantization;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
@@ -30,8 +32,9 @@ public class Main extends Application {
 
     }
 
-    final String originalPath = System.getProperty("user.dir")+"\\src\\main\\resources\\com\\example\\colorquantization\\pics\\originals\\";
-    final String editedPath = System.getProperty("user.dir")+"\\src\\main\\resources\\com\\example\\colorquantization\\pics\\Edited\\";
+    static final String originalPath = System.getProperty("user.dir") + "\\src\\main\\resources\\com\\example\\colorquantization\\pics\\originals\\";
+    static final String editedPath = System.getProperty("user.dir") + "\\src\\main\\resources\\com\\example\\colorquantization\\pics\\Edited\\";
+    static final String ImagesPath = System.getProperty("user.dir") + "\\Images";
     final float screenWidth = Toolkit.getDefaultToolkit().getScreenSize().width;
     final float screenHeight = Toolkit.getDefaultToolkit().getScreenSize().height;
 
@@ -40,17 +43,18 @@ public class Main extends Application {
     File newImageFile;
     Scene scene;
     TextField numberId;
-    Button addImageButton, applyButton, saveImageButton, colorPaletteBtn, histogramBtn;
+    Button addImageButton, applyButton, saveImageButton, colorPaletteBtn, histogramBtn, searchBtn;
     ImageView original, edited;
+    Parent root;
     ChoiceBox<Algorithms> choiceBox;
 
 
     @Override
     public void start(Stage stage) throws IOException {
         System.out.println(System.getProperty("user.dir"));
-
         FXMLLoader fxmlLoader = new FXMLLoader(Main.class.getResource("main-view.fxml"));
-        scene = new Scene(fxmlLoader.load(), screenWidth / 2, screenHeight / 2);
+        root = fxmlLoader.load();
+        scene = new Scene(root, screenWidth / 2, screenHeight / 2);
 
         original = (ImageView) scene.lookup("#original");
         edited = (ImageView) scene.lookup("#edited");
@@ -59,6 +63,7 @@ public class Main extends Application {
         colorPaletteBtn = (Button) scene.lookup("#colorPaletteBtn");
         saveImageButton = (Button) scene.lookup("#saveImageButton");
         histogramBtn = (Button) scene.lookup("#histogramBtn");
+        searchBtn = (Button) scene.lookup("#searchBtn");
 
         choiceBox = (ChoiceBox<Algorithms>) scene.lookup("#choiceBox");
         numberId = (TextField) scene.lookup("#numberId");
@@ -78,7 +83,24 @@ public class Main extends Application {
         saveImageButton.setOnAction(saveNewImage(stage));
         colorPaletteBtn.setOnAction(openColorPalette());
         histogramBtn.setOnAction(openColorHistogram());
+        searchBtn.setOnAction(openSearchScreen());
 
+    }
+
+    private Action openSearchScreen() {
+        return new Action(e -> {
+            try {
+                root = FXMLLoader.load(MainController.class.getResource("search-view.fxml"));
+                Stage stage = new Stage();
+                stage.setTitle("My New Stage Title");
+                stage.setScene(new Scene(root, 1280, 800));
+                stage.show();
+                // Hide this current window (if this is what you want)
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
+
+        });
     }
 
     private Action saveNewImage(Stage stage) {

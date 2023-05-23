@@ -23,8 +23,6 @@ public class MainController {
 
     Image originalPhoto;
     @FXML
-    private GridPane gridPane;
-    @FXML
     private ImageView ogPhoto;
     @FXML
     private VBox vBox;
@@ -74,6 +72,7 @@ public class MainController {
         }
 
         System.out.println(originalPhoto.getUrl());
+
         BufferedImage target = ImageIO.read(new File(originalPhoto.getUrl().substring(5)));
 
         for (String path : imagesPath) {
@@ -93,6 +92,7 @@ public class MainController {
             }
 
         }
+
     }
 
     public double compareImages(BufferedImage image1, BufferedImage image2) {

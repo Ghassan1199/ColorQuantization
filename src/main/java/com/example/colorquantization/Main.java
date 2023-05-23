@@ -2,7 +2,6 @@ package com.example.colorquantization;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -123,7 +122,9 @@ public class Main extends Application {
     private Action openColorHistogram() {
         return new Action(e -> {
             try {
-                ColorHistogram.MakeColorHistogram(newImageFile.getPath());
+
+                ColorHistogram colorHistogram = new ColorHistogram(newImageFile.getPath());
+                colorHistogram.MakeColorHistogram();
             } catch (Exception ex) {
                 throw new RuntimeException(ex);
             }

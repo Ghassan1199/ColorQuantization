@@ -8,21 +8,16 @@ import java.io.IOException;
 
 public class ColorHistogram {
     // Define the number of histogram bins for each color channel
-    private static final int numBins = 256;
+    private  final int numBins = 256;
 
     // Create a histogram for each color channel
-    public static int[] redHistogram = new int[numBins];
-    public static int[] greenHistogram = new int[numBins];
-    public static int[] blueHistogram = new int[numBins];
-    int maxRed = 0;
-    int maxGreen = 0;
-    int maxBlue = 0;
-    int max = 0;
+    public  int[] redHistogram = new int[numBins];
+    public  int[] greenHistogram = new int[numBins];
+    public  int[] blueHistogram = new int[numBins];
 
-    public static void MakeColorHistogram(String inputImagePath) throws IOException, InterruptedException {
+    ColorHistogram(String inputImagePath) throws IOException {
         File inputFile = new File(inputImagePath);
         BufferedImage inputImage = ImageIO.read(inputFile);
-
         for (int y = 0; y < inputImage.getHeight(); y++) {
             for (int x = 0; x < inputImage.getWidth(); x++) {
                 // Get the color values for the pixel at (x,y)
@@ -48,6 +43,9 @@ public class ColorHistogram {
             blueHistogram[i] /= 128;
         }
 
+    }
+
+    public  void MakeColorHistogram() throws IOException, InterruptedException {
         // Find the maximum count in any of the histograms
         int maxCount = 0;
         for (int i = 0; i < 256; i++) {

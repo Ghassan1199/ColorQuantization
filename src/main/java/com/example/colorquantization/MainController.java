@@ -6,6 +6,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
+import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
@@ -54,13 +55,22 @@ public class MainController {
             System.out.println("select a photo first");
             return;
         }
-        ArrayList<ImageView> Images = new ArrayList<>();
+        DirectoryChooser directoryChooser = new DirectoryChooser();
+        directoryChooser.setTitle("choose the directory");
+        directoryChooser.setInitialDirectory(new File(Main.ImagesPath));
+        File folder = directoryChooser.showDialog(new Stage());
+
+
         List<String> imagesPath = new ArrayList<>();
-        File folder = new File(Main.ImagesPath);
 
         List<File> listOfFiles = new ArrayList<>(List.of(Objects.requireNonNull(folder.listFiles())));
         for (File file : listOfFiles) {
-            imagesPath.add(file.getName());
+            int index = file.getName().lastIndexOf('.');
+            String extension = file.getName().substring(index + 1);
+            if (extension.equals("png") || extension.equals("jpg")) {
+                imagesPath.add(file.getName());
+
+            }
         }
 
         System.out.println(originalPhoto.getUrl());
@@ -76,7 +86,7 @@ public class MainController {
             System.out.println("-----------------------------");
             if (similarity > 0.4) {
                 vBox.getChildren().add(new Text("Similarity: " + similarity));
-                ImageView img= new ImageView(new Image("file:" + folder.getPath() + "\\" + path));
+                ImageView img = new ImageView(new Image("file:" + folder.getPath() + "\\" + path));
                 img.setFitHeight(200);
                 img.setFitWidth(500);
                 vBox.getChildren().add(img);

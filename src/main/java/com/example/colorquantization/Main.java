@@ -192,7 +192,7 @@ public class Main extends Application {
 
                 case UNIFORM_COLOR -> {
                     try {
-                        newImageFile = UniformColor.start(imgPath, targetColor, editedPath + Algorithms.UNIFORM_COLOR.name() + "\\");
+                        newImageFile = UniformColor.start(imgPath, editedPath + Algorithms.UNIFORM_COLOR.name() + "\\", targetColor);
                         newImage = new Image("file:" + newImageFile.getPath());
                     } catch (IOException ex) {
                         throw new RuntimeException(ex);
@@ -201,7 +201,7 @@ public class Main extends Application {
                 }
             }
             long elapsedTime = System.nanoTime() - startTime;
-            System.out.println("Time to run  "+a+" is :" + elapsedTime/1000000000);
+            System.out.println("Time to run  " + a + " is :" + elapsedTime / 1000000000);
 
             edited.setImage(newImage);
         });

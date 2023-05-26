@@ -6,14 +6,12 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.HashSet;
 
 public class ColorPalette {
     HashSet<Color> colorSet = new HashSet<>();
     ArrayList<Color> colorArray = new ArrayList<>();
 
-    File imageFile;
 
     public ColorPalette(String path) throws IOException {
         File imageFile = new File(path);
@@ -31,42 +29,37 @@ public class ColorPalette {
                 colorSet.add(color);
             }
         }
-
         // Convert the HashSet to an array
         colorArray.addAll(colorSet);
         // Sort the array by RGB values
-        colorArray.sort(new Comparator<Color>() {
-            @Override
-            public int compare(Color o1, Color o2) {
-                float[] hsv1 = rgbToHsv(o1);
-                float[] hsv2 = rgbToHsv(o2);
+        colorArray.sort((o1, o2) -> {
+            float[] hsv1 = rgbToHsv(o1);
+            float[] hsv2 = rgbToHsv(o2);
 
-                // Compare the Hue values first
-                if (hsv1[0] < hsv2[0]) {
-                    return -1;
-                } else if (hsv1[0] > hsv2[0]) {
-                    return 1;
-                }
-
-                // If the Hue values are equal, compare the Saturation values
-                if (hsv1[1] < hsv2[1]) {
-                    return -1;
-                } else if (hsv1[1] > hsv2[1]) {
-                    return 1;
-                }
-
-                // If the Saturation values are equal, compare the Value/Brightness values
-                if (hsv1[2] < hsv2[2]) {
-                    return -1;
-                } else if (hsv1[2] > hsv2[2]) {
-                    return 1;
-                }
-
-                // If all HSV values are equal, consider the colors equal
-                return 0;
+            // Compare the Hue values first
+            if (hsv1[0] < hsv2[0]) {
+                return -1;
+            } else if (hsv1[0] > hsv2[0]) {
+                return 1;
             }
+
+            // If the Hue values are equal, compare the Saturation values
+            if (hsv1[1] < hsv2[1]) {
+                return -1;
+            } else if (hsv1[1] > hsv2[1]) {
+                return 1;
+            }
+
+            // If the Saturation values are equal, compare the Value/Brightness values
+            if (hsv1[2] < hsv2[2]) {
+                return -1;
+            } else if (hsv1[2] > hsv2[2]) {
+                return 1;
+            }
+
+            // If all HSV values are equal, consider the colors equal
+            return 0;
         });
-        System.out.println(colorArray.size());
     }
 
 
@@ -96,20 +89,23 @@ public class ColorPalette {
 
     static public double compareTwoImages(ColorPalette image1, ColorPalette image2) {
         int count = 0;
-
-        for (int i = 0; i < Math.min(image1.colorArray.size(),image2.colorArray.size()); i++) {
-            if (isSimilar(image1.colorArray.get(i), image2.colorArray.get(i))) {
-                count++;
+        for (int i = 0; i < image2.colorArray.size(); i++) {
+            for (int j = 0; j < image1.colorArray.size(); j++) {
+                if (image1.colorArray.get(j).equals(image2.colorArray.get(i))) {
+                    count++;
+                    break;
+                }
             }
 
+
         }
-        return (double) count / Math.min(image1.colorArray.size(),image2.colorArray.size());
+        return (double) count / ((image1.colorArray.size() + image2.colorArray.size()) / 2);
     }
 
     static boolean isSimilar(Color co1, Color co2) {
         float[] c1 = rgbToHsv(co1);
         float[] c2 = rgbToHsv(co2);
-        if (Math.abs(c1[0] - c2[0]) <= 15 && Math.abs(c1[1] - c2[1]) <= 100 && Math.abs(c1[2] - c2[2]) <= 100) {
+        if (Math.abs(c1[0] - c2[0]) <= 5 && Math.abs(c1[1] - c2[1]) <= 5 && Math.abs(c1[2] - c2[2]) <= 5) {
             return true;
         } else {
             return false;

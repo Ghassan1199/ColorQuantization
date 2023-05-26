@@ -10,11 +10,11 @@ import java.util.List;
 
 public class UniformColor {
 
-    public static File start(String originalImagePath, int targetColor, String newImagePath) throws IOException {
+    public static File start(String originalImagePath, String newImagePath,int targetColor) throws IOException {
 
         File imageFile = new File(originalImagePath);
         BufferedImage image1 = ImageIO.read(imageFile);
-        BufferedImage image = resize(image1, 480, 360);
+        BufferedImage image = resize(image1, 800, 600);
         int width = image.getWidth();
         int height = image.getHeight();
         int[] pixels = image.getRGB(0, 0, width, height, null, 0, width);

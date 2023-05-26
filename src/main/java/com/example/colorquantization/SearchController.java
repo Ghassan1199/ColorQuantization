@@ -73,10 +73,10 @@ public class SearchController {
         }
 
         System.out.println(originalPhoto.getUrl());
-        File image1 = Kmeans.start(originalPhoto.getUrl().substring(5), Main.editedPath, 16);
+        File image1 = UniformColor.start(originalPhoto.getUrl().substring(5), Main.editedPath, 4);
 
         for (String path : imagesPath) {
-            File image2 = Kmeans.start(folder.getPath() + "\\" + path, Main.editedPath, 16);
+            File image2 = UniformColor.start(folder.getPath() + "\\" + path, Main.editedPath, 4);
             double similarity = compareImagesUsingHistogram(image1.getPath(), image2.getPath());
             similarity = getTwoDigits(similarity);
             System.out.println(path);
@@ -125,16 +125,16 @@ public class SearchController {
         }
 
         System.out.println(originalPhoto.getUrl());
-        File image1 = Kmeans.start(originalPhoto.getUrl().substring(5), Main.editedPath, 16);
+        File image1 = UniformColor.start(originalPhoto.getUrl().substring(5), Main.editedPath, 4);
 
         for (String path : imagesPath) {
-            File image2 = Kmeans.start(folder.getPath() + "\\" + path, Main.editedPath, 16);
+            File image2 = UniformColor.start(folder.getPath() + "\\" + path, Main.editedPath, 4);
             double similarity = compareImagesUsingColorPalette(image2.getPath(), image1.getPath());
             similarity = getTwoDigits(similarity);
             System.out.println(path);
             System.out.println("Similarity: " + similarity);
             System.out.println("-----------------------------");
-            if (similarity >= 0.4) {
+            if (similarity >= 0.85) {
                 vBox.getChildren().add(new Text("Similarity: " + similarity));
                 ImageView img = new ImageView(new Image("file:" + folder.getPath() + "\\" + path));
                 img.setFitHeight(200);

@@ -8,12 +8,12 @@ import java.io.IOException;
 
 public class ColorHistogram {
     // Define the number of histogram bins for each color channel
-    private  final int numBins = 256;
+    private final int numBins = 256;
 
     // Create a histogram for each color channel
-    public  int[] redHistogram = new int[numBins];
-    public  int[] greenHistogram = new int[numBins];
-    public  int[] blueHistogram = new int[numBins];
+    public int[] redHistogram = new int[numBins];
+    public int[] greenHistogram = new int[numBins];
+    public int[] blueHistogram = new int[numBins];
 
     ColorHistogram(String inputImagePath) throws IOException {
         File inputFile = new File(inputImagePath);
@@ -45,7 +45,7 @@ public class ColorHistogram {
 
     }
 
-    public  void MakeColorHistogram() throws IOException, InterruptedException {
+    public void MakeColorHistogram() throws IOException, InterruptedException {
         // Find the maximum count in any of the histograms
         int maxCount = 0;
         for (int i = 0; i < 256; i++) {
@@ -89,6 +89,47 @@ public class ColorHistogram {
         p.waitFor();
 
 
+    }
+
+
+    double calculateHistogramIntersection(ColorHistogram histogram1, ColorHistogram histogram2) {
+        int redIntersection = 0;
+        int greenInterSection = 0;
+        int blueInterSection = 0;
+
+
+        for (int i = 0; i < histogram1.greenHistogram.length; i++) {
+            redIntersection += Math.min(histogram1.redHistogram[i], histogram2.redHistogram[i]);
+        }
+        for (int i = 0; i < histogram1.greenHistogram.length; i++) {
+            blueInterSection += Math.min(histogram1.blueHistogram[i], histogram2.blueHistogram[i]);
+        }
+        for (int i = 0; i < histogram1.greenHistogram.length; i++) {
+            greenInterSection += Math.min(histogram1.greenHistogram[i], histogram2.greenHistogram[i]);
+        }
+
+        int totalIntersection = redIntersection + blueInterSection + greenInterSection;
+
+        return (double) totalIntersection / ((getTotalPixels(histogram1) + getTotalPixels(histogram2)) / 2);
+
+
+    }
+
+
+    private int getTotalPixels(ColorHistogram histogram) {
+        int totalPixels = 0;
+
+        for (int count : histogram.greenHistogram) {
+            totalPixels += count;
+        }
+        for (int count : histogram.redHistogram) {
+            totalPixels += count;
+        }
+        for (int count : histogram.blueHistogram) {
+            totalPixels += count;
+        }
+
+        return totalPixels;
     }
 
 

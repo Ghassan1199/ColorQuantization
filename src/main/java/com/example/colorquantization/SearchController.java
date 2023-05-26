@@ -3,14 +3,12 @@ package com.example.colorquantization;
 import javafx.fxml.FXML;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
-import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -19,7 +17,7 @@ import java.util.List;
 import java.util.Objects;
 
 
-public class MainController {
+public class SearchController {
 
     Image originalPhoto;
     @FXML
@@ -48,7 +46,7 @@ public class MainController {
     }
 
     @FXML
-    protected void search() throws IOException {
+    protected void searchUsingColorHistogram() throws IOException {
         if (originalPhoto == null) {
             System.out.println("select a photo first");
             return;
@@ -58,6 +56,10 @@ public class MainController {
         directoryChooser.setInitialDirectory(new File(Main.ImagesPath));
         File folder = directoryChooser.showDialog(new Stage());
 
+        if (folder == null) {
+            System.out.println("Choose a Directory ");
+            return;
+        }
 
         List<String> imagesPath = new ArrayList<>();
 
@@ -67,41 +69,94 @@ public class MainController {
             String extension = file.getName().substring(index + 1);
             if (extension.equals("png") || extension.equals("jpg")) {
                 imagesPath.add(file.getName());
-
             }
         }
 
         System.out.println(originalPhoto.getUrl());
 
-        BufferedImage target = ImageIO.read(new File(originalPhoto.getUrl().substring(5)));
-
         for (String path : imagesPath) {
             File image = new File(folder.getPath() + "\\" + path);
-            BufferedImage im = ImageIO.read(image);
-            double similarity = compareImages(im, target);
+            double similarity = compareImagesUsingHistogram(image.getPath(), originalPhoto.getUrl().substring(5));
             similarity = getTwoDigits(similarity);
             System.out.println(path);
             System.out.println("Similarity: " + similarity);
             System.out.println("-----------------------------");
-            if (similarity > 0.4) {
-                vBox.getChildren().add(new Text("Similarity: " + similarity));
-                ImageView img = new ImageView(new Image("file:" + folder.getPath() + "\\" + path));
-                img.setFitHeight(200);
-                img.setFitWidth(500);
-                vBox.getChildren().add(img);
-            }
+
+            vBox.getChildren().add(new Text("Similarity: " + similarity));
+            ImageView img = new ImageView(new Image("file:" + folder.getPath() + "\\" + path));
+            img.setFitHeight(200);
+            img.setFitWidth(500);
+            vBox.getChildren().add(img);
+
 
         }
 
     }
 
-    public double compareImages(BufferedImage image1, BufferedImage image2) {
+    @FXML
+    protected void searchUsingColorPalette() throws IOException {
+        if (originalPhoto == null) {
+            System.out.println("select a photo first");
+            return;
+        }
+        DirectoryChooser directoryChooser = new DirectoryChooser();
+        directoryChooser.setTitle("choose the directory");
+        directoryChooser.setInitialDirectory(new File(Main.ImagesPath));
+        File folder = directoryChooser.showDialog(new Stage());
 
-        int[] histogram1 = MakeColorHistogram(image1);
-        int[] histogram2 = MakeColorHistogram(image2);
+        if (folder == null) {
+            System.out.println("Choose a Directory ");
+            return;
+        }
 
-        return calculateHistogramIntersection(histogram1, histogram2);
+        List<String> imagesPath = new ArrayList<>();
+
+        List<File> listOfFiles = new ArrayList<>(List.of(Objects.requireNonNull(folder.listFiles())));
+        for (File file : listOfFiles) {
+            int index = file.getName().lastIndexOf('.');
+            String extension = file.getName().substring(index + 1);
+            if (extension.equals("png") || extension.equals("jpg")) {
+                imagesPath.add(file.getName());
+            }
+        }
+
+        System.out.println(originalPhoto.getUrl());
+
+        for (String path : imagesPath) {
+            File image = new File(folder.getPath() + "\\" + path);
+            double similarity = compareImagesUsingColorPalette(image.getPath(), originalPhoto.getUrl().substring(5));
+            similarity = getTwoDigits(similarity);
+            System.out.println(path);
+            System.out.println("Similarity: " + similarity);
+            System.out.println("-----------------------------");
+
+            vBox.getChildren().add(new Text("Similarity: " + similarity));
+            ImageView img = new ImageView(new Image("file:" + folder.getPath() + "\\" + path));
+            img.setFitHeight(200);
+            img.setFitWidth(500);
+            vBox.getChildren().add(img);
+
+
+        }
+
     }
+
+
+    public double compareImagesUsingHistogram(String image1, String image2) throws IOException {
+
+        ColorHistogram histogram1 = new ColorHistogram(image1);
+        ColorHistogram histogram2 = new ColorHistogram(image2);
+        return histogram2.calculateHistogramIntersection(histogram1, histogram2);
+
+    }
+
+    public double compareImagesUsingColorPalette(String image1, String image2) throws IOException {
+        ColorPalette palette1 = new ColorPalette(image1);
+        ColorPalette palette2 = new ColorPalette(image2);
+        return ColorPalette.compareTwoImages(palette1, palette2);
+
+    }
+
 
     static int[] MakeColorHistogram(BufferedImage image) {
         int[] histogram = new int[256];
@@ -125,28 +180,6 @@ public class MainController {
         }
 
         return histogram;
-    }
-
-
-    private double calculateHistogramIntersection(int[] histogram1, int[] histogram2) {
-        int totalIntersection = 0;
-
-        for (int i = 0; i < histogram1.length; i++) {
-            totalIntersection += Math.min(histogram1[i], histogram2[i]);
-        }
-
-
-        return (double) totalIntersection / getTotalPixels(histogram1);
-    }
-
-    private int getTotalPixels(int[] histogram) {
-        int totalPixels = 0;
-
-        for (int count : histogram) {
-            totalPixels += count;
-        }
-
-        return totalPixels;
     }
 
 

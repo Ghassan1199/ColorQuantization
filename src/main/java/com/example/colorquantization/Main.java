@@ -89,7 +89,7 @@ public class Main extends Application {
     private Action openSearchScreen() {
         return new Action(e -> {
             try {
-                root = FXMLLoader.load(MainController.class.getResource("search-view.fxml"));
+                root = FXMLLoader.load(SearchController.class.getResource("search-view.fxml"));
                 Stage stage = new Stage();
                 stage.setTitle("My New Stage Title");
                 stage.setScene(new Scene(root, 1280, 800));
@@ -133,34 +133,13 @@ public class Main extends Application {
 
     private Action openColorPalette() {
         return new Action(e -> {
-            BufferedImage image = new BufferedImage(1280, 1280, BufferedImage.TYPE_INT_RGB);
             try {
-                int x = 0;
-                Color[] colors = ColorPalette.getColorPalette(newImageFile.getPath());
-                int rectWidth = 1280 / colors.length;
-                int recHeight = 1280;
-
-                for (Color color : colors) {
-                    for (int i = 0; i < rectWidth; i++) {
-                        for (int j = 0; j < recHeight; j++) {
-                            image.setRGB(j, x + i, color.getRGB());
-                        }
-                    }
-                    x += rectWidth;
-
-                }
-                ImageIO.write(image, "png", new File("colorPalette.png"));
-                File file = new File("colorPalette.png");
-                String[] commands = {
-                        "cmd.exe", "/c", "start", "\"DummyTitle\"", "\"" + file.getAbsolutePath() + "\""
-                };
-                Process p = Runtime.getRuntime().exec(commands);
-                p.waitFor();
+                ColorPalette colorPalette = new ColorPalette(newImageFile.getPath());
+                colorPalette.createColorPalette();
 
             } catch (Exception s) {
                 s.printStackTrace();
             }
-
 
         });
     }

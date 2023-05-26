@@ -5,16 +5,19 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashSet;
 
 public class ColorPalette {
-    public static Color[] getColorPalette(String path) throws IOException {
+    HashSet<Color> colorSet = new HashSet<>();
+    ArrayList<Color> colorArray = new ArrayList<>();
+
+    File imageFile;
+
+    public ColorPalette(String path) throws IOException {
         File imageFile = new File(path);
         BufferedImage reducedImage = ImageIO.read(imageFile);
-
-        HashSet<Color> colorSet = new HashSet<>();
 
         // Loop through each pixel in the reduced image
         int width = reducedImage.getWidth();
@@ -30,15 +33,46 @@ public class ColorPalette {
         }
 
         // Convert the HashSet to an array
-        Color[] colorArray = new Color[colorSet.size()];
-        colorSet.toArray(colorArray);
 
+        colorArray.addAll(colorSet);
         // Sort the array by RGB values
-        Arrays.sort(colorArray, Comparator.comparingInt(Color::getRGB));
-        System.out.println(colorArray.length);
+        colorArray.sort(Comparator.comparingInt(Color::getRGB));
+        System.out.println(colorArray.size());
+    }
 
-        // Return the sorted array as the color palette
-        return colorArray;
+
+    public void createColorPalette() throws IOException, InterruptedException {
+        BufferedImage image = new BufferedImage(1280, 1280, BufferedImage.TYPE_INT_RGB);
+        int x = 0;
+        int rectWidth = 1280 / this.colorArray.size();
+        int recHeight = 1280;
+
+        for (Color color : this.colorArray) {
+            for (int i = 0; i < rectWidth; i++) {
+                for (int j = 0; j < recHeight; j++) {
+                    image.setRGB(j, x + i, color.getRGB());
+                }
+            }
+            x += rectWidth;
+
+        }
+        ImageIO.write(image, "png", new File("colorPalette.png"));
+        File file = new File("colorPalette.png");
+        String[] commands = {
+                "cmd.exe", "/c", "start", "\"DummyTitle\"", "\"" + file.getAbsolutePath() + "\""
+        };
+        Process p = Runtime.getRuntime().exec(commands);
+        p.waitFor();
+    }
+
+    static public double compareTwoImages(ColorPalette image1, ColorPalette image2) {
+        int count = 0;
+        for (Color color1 : image1.colorArray
+        ) {
+            if (image2.colorSet.contains(color1))
+                count++;
+        }
+        return (double) count / Math.min(image1.colorArray.size(),image2.colorArray.size());
     }
 
 }

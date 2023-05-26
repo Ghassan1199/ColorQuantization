@@ -11,8 +11,10 @@ import java.util.List;
 public class UniformColor {
 
     public static File start(String originalImagePath, int targetColor, String newImagePath) throws IOException {
+
         File imageFile = new File(originalImagePath);
-        BufferedImage image = ImageIO.read(imageFile);
+        BufferedImage image1 = ImageIO.read(imageFile);
+        BufferedImage image = resize(image1, 480, 360);
         int width = image.getWidth();
         int height = image.getHeight();
         int[] pixels = image.getRGB(0, 0, width, height, null, 0, width);
@@ -55,13 +57,14 @@ public class UniformColor {
         }
 
         // Create a new image with the quantized colors
-        BufferedImage result = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        BufferedImage result = new BufferedImage(width, height, BufferedImage.TYPE_BYTE_INDEXED);
         result.setRGB(0, 0, width, height, quantizedPixels, 0, width);
 
         File outputImageFile = new File(newImagePath + "UNIFORM_COLOR" + imageFile.getName());
         System.out.println("OUTPUT " + outputImageFile.getPath());
         ImageIO.write(result, "png", outputImageFile);
-        
+
+
         return outputImageFile;
     }
 
@@ -83,5 +86,16 @@ public class UniformColor {
         int dg = c1.getGreen() - c2.getGreen();
         int db = c1.getBlue() - c2.getBlue();
         return Math.sqrt(dr * dr + dg * dg + db * db);
+    }
+
+    public static BufferedImage resize(BufferedImage img, int newW, int newH) {
+        Image tmp = img.getScaledInstance(newW, newH, Image.SCALE_SMOOTH);
+        BufferedImage dimg = new BufferedImage(newW, newH, BufferedImage.TYPE_BYTE_INDEXED);
+
+        Graphics2D g2d = dimg.createGraphics();
+        g2d.drawImage(tmp, 0, 0, null);
+        g2d.dispose();
+
+        return dimg;
     }
 }

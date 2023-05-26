@@ -33,7 +33,6 @@ public class ColorPalette {
         }
 
         // Convert the HashSet to an array
-
         colorArray.addAll(colorSet);
         // Sort the array by RGB values
         colorArray.sort(Comparator.comparingInt(Color::getRGB));
@@ -42,7 +41,7 @@ public class ColorPalette {
 
 
     public void createColorPalette() throws IOException, InterruptedException {
-        BufferedImage image = new BufferedImage(1280, 1280, BufferedImage.TYPE_INT_RGB);
+        BufferedImage image = new BufferedImage(1280, 1280, BufferedImage.TYPE_BYTE_INDEXED);
         int x = 0;
         int rectWidth = 1280 / this.colorArray.size();
         int recHeight = 1280;
@@ -67,12 +66,23 @@ public class ColorPalette {
 
     static public double compareTwoImages(ColorPalette image1, ColorPalette image2) {
         int count = 0;
-        for (Color color1 : image1.colorArray
-        ) {
-            if (image2.colorSet.contains(color1))
+        for(int i=0;i<image1.colorArray.size()-1;i++){
+            if(similarTo(image1.colorArray.get(i),image2.colorArray.get(i))){
                 count++;
+            }
         }
         return (double) count / Math.min(image1.colorArray.size(),image2.colorArray.size());
+    }
+
+    static boolean similarTo(Color c1,Color c2){
+        double distance = (c1.getRed() - c2.getRed())*(c1.getRed() - c2.getRed()) + (c1.getGreen() - c2.getGreen())*(c1.getGreen() - c2.getGreen()) + (c1.getBlue() - c2.getBlue())*(c1.getBlue() - c2.getBlue());
+        System.out.println(Math.sqrt(distance));
+
+        if(Math.sqrt(distance)>150){
+            return true;
+        }else{
+            return false;
+        }
     }
 
 }

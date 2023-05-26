@@ -53,7 +53,7 @@ public class ColorHistogram {
         }
 
         // Create a new image to draw the histogram on
-        BufferedImage histogramImage = new BufferedImage(768, maxCount, BufferedImage.TYPE_INT_RGB);
+        BufferedImage histogramImage = new BufferedImage(768, maxCount, BufferedImage.TYPE_BYTE_INDEXED);
         Graphics2D g2d = histogramImage.createGraphics();
         g2d.setColor(Color.WHITE);
         g2d.fillRect(0, 0, histogramImage.getWidth(), histogramImage.getHeight());

@@ -123,7 +123,7 @@ public class SearchController {
         System.out.println(originalPhoto.getUrl());
 
         for (String path : imagesPath) {
-            File image = new File(folder.getPath() + "\\" + path);
+            File image = Kmeans.start(folder.getPath() + "\\" + path,Main.editedPath,8);
             double similarity = compareImagesUsingColorPalette(image.getPath(), originalPhoto.getUrl().substring(5));
             similarity = getTwoDigits(similarity);
             System.out.println(path);

@@ -6,9 +6,14 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
+
 public class Kmeans {
+
+    public Kmeans(String s, String editedPath, int i) {
+    }
 
     public static File start(String originalImagePath, String newImagePath, int k) {
         try {
@@ -18,7 +23,7 @@ public class Kmeans {
             System.out.println("reading image is done");
 
             // Perform color quantization with k-means
-            java.util.List<Color> colors = getColors(image);
+            List<Color> colors = new ArrayList<>(getHashColors(image));
             System.out.println("analays stage done");
 
             java.util.List<Color> centroids = getInitialCentroids(k, colors);
@@ -33,8 +38,8 @@ public class Kmeans {
                     int closestCentroidIndex = getClosestCentroidIndex(color, centroids);
                     clusters.get(closestCentroidIndex).add(color);
                 }
-                java.util.List<Color> newCentroids = new ArrayList<>();
-                for (java.util.List<Color> cluster : clusters) {
+                List<Color> newCentroids = new ArrayList<>();
+                for (List<Color> cluster : clusters) {
                     if (cluster.size() == 0) {
                         newCentroids.add(centroids.get(clusters.indexOf(cluster)));
                     } else {
@@ -53,7 +58,7 @@ public class Kmeans {
             }
 
             // Create a new image with quantized colors
-            BufferedImage quantizedImage = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_INT_RGB);
+            BufferedImage quantizedImage = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_BYTE_INDEXED);
             for (int y = 0; y < image.getHeight(); y++) {
                 for (int x = 0; x < image.getWidth(); x++) {
                     Color color = new Color(image.getRGB(x, y));
@@ -75,15 +80,15 @@ public class Kmeans {
     }
 
 
-    private static List<Color> getColors(BufferedImage image) {
+
+
+    private static HashSet<Color> getHashColors(BufferedImage image) {
         //  get colors for input image
-        java.util.List<Color> colors = new ArrayList<>();
+        HashSet<Color> colors = new HashSet<>();
         for (int y = 0; y < image.getHeight(); y++) {
             for (int x = 0; x < image.getWidth(); x++) {
                 Color color = new Color(image.getRGB(x, y));
-                if (!colors.contains(color)) {
-                    colors.add(color);
-                }
+                colors.add(color);
             }
         }
         return colors;

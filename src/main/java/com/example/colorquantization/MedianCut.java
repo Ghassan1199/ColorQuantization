@@ -36,7 +36,7 @@ public class MedianCut {
         List<Color> palette = medianCut(pixelList, targetColorCount);
 
         // Step 3: Replace each pixel in the image with its closest color from the palette
-        BufferedImage result = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        BufferedImage result = new BufferedImage(width, height, BufferedImage.TYPE_BYTE_INDEXED);
         //  IndexColorModel colorModel = new IndexColorModel(8, palette.size(), convertColors(palette), 0, false, -1, DataBuffer.TYPE_BYTE);
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {

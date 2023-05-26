@@ -24,18 +24,19 @@ import java.util.Objects;
 
 public class Main extends Application {
 
-    enum Algorithms {
-        K_MEANS,
-        MEDIAN_CUT,
-        UNIFORM_COLOR
-
-    }
-
     static final String originalPath = System.getProperty("user.dir") + "\\src\\main\\resources\\com\\example\\colorquantization\\pics\\originals\\";
     static final String editedPath = System.getProperty("user.dir") + "\\src\\main\\resources\\com\\example\\colorquantization\\pics\\Edited\\";
     static final String ImagesPath = System.getProperty("user.dir") + "\\Images";
     final float screenWidth = Toolkit.getDefaultToolkit().getScreenSize().width;
     final float screenHeight = Toolkit.getDefaultToolkit().getScreenSize().height;
+
+    enum Algorithms {
+        K_MEANS,
+        MEDIAN_CUT,
+        UNIFORM_COLOR
+    }
+
+    BufferedImage oldImage;
 
     Image selectedImage;
     Image newImage;
@@ -69,7 +70,6 @@ public class Main extends Application {
 
         choiceBox.getItems().add(Algorithms.K_MEANS);
         choiceBox.getItems().add(Algorithms.UNIFORM_COLOR);
-
         choiceBox.getItems().add(Algorithms.MEDIAN_CUT);
 
 
@@ -89,7 +89,7 @@ public class Main extends Application {
     private Action openSearchScreen() {
         return new Action(e -> {
             try {
-                root = FXMLLoader.load(SearchController.class.getResource("search-view.fxml"));
+                root = FXMLLoader.load(Objects.requireNonNull(SearchController.class.getResource("search-view.fxml")));
                 Stage stage = new Stage();
                 stage.setTitle("My New Stage Title");
                 stage.setScene(new Scene(root, 1280, 800));
@@ -152,6 +152,7 @@ public class Main extends Application {
             }
 
             Algorithms a = choiceBox.getValue();
+
             if (a == null) {
                 System.out.println("Select Algorithim");
                 return;
@@ -169,6 +170,8 @@ public class Main extends Application {
             }
 
             String imgPath = selectedImage.getUrl().substring(5);
+            long startTime = System.nanoTime();
+
             switch (a) {
 
                 case K_MEANS -> {
@@ -196,10 +199,9 @@ public class Main extends Application {
                     }
 
                 }
-
-                default -> {
-                }
             }
+            long elapsedTime = System.nanoTime() - startTime;
+            System.out.println("Time to run  "+a+" is :" + elapsedTime/1000000000);
 
             edited.setImage(newImage);
         });
@@ -211,11 +213,11 @@ public class Main extends Application {
 
     public Action selectImageAction(Stage stage) {
         return new Action(e -> {
+
             FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle("Select an Image");
             fileChooser.setInitialDirectory(new File(System.getProperty("user.dir") + "\\Images"));
             fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.gif"));
-
 
             try {
                 File file = fileChooser.showOpenDialog(stage);
@@ -235,8 +237,8 @@ public class Main extends Application {
     public void saveOldImage(File file) {
 
         try {
-            BufferedImage image = ImageIO.read(file);
-            ImageIO.write(image, "png", new File(originalPath + "OG" + file.getName()));
+            oldImage = ImageIO.read(file);
+            ImageIO.write(oldImage, "png", new File(originalPath + "OG" + file.getName()));
 
         } catch (IOException ex) {
             throw new RuntimeException(ex);

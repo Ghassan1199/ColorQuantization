@@ -73,20 +73,23 @@ public class SearchController {
         }
 
         System.out.println(originalPhoto.getUrl());
+        File image1 = Kmeans.start(originalPhoto.getUrl().substring(5), Main.editedPath, 16);
 
         for (String path : imagesPath) {
-            File image = new File(folder.getPath() + "\\" + path);
-            double similarity = compareImagesUsingHistogram(image.getPath(), originalPhoto.getUrl().substring(5));
+            File image2 = Kmeans.start(folder.getPath() + "\\" + path, Main.editedPath, 16);
+            double similarity = compareImagesUsingHistogram(image1.getPath(), image2.getPath());
             similarity = getTwoDigits(similarity);
             System.out.println(path);
             System.out.println("Similarity: " + similarity);
             System.out.println("-----------------------------");
+            if(similarity>=0.4){
+                vBox.getChildren().add(new Text("Similarity: " + similarity));
+                ImageView img = new ImageView(new Image("file:" + folder.getPath() + "\\" + path));
+                img.setFitHeight(200);
+                img.setFitWidth(500);
+                vBox.getChildren().add(img);
+            }
 
-            vBox.getChildren().add(new Text("Similarity: " + similarity));
-            ImageView img = new ImageView(new Image("file:" + folder.getPath() + "\\" + path));
-            img.setFitHeight(200);
-            img.setFitWidth(500);
-            vBox.getChildren().add(img);
 
 
         }
@@ -99,6 +102,7 @@ public class SearchController {
             System.out.println("select a photo first");
             return;
         }
+
         DirectoryChooser directoryChooser = new DirectoryChooser();
         directoryChooser.setTitle("choose the directory");
         directoryChooser.setInitialDirectory(new File(Main.ImagesPath));
@@ -121,20 +125,22 @@ public class SearchController {
         }
 
         System.out.println(originalPhoto.getUrl());
+        File image1 = Kmeans.start(originalPhoto.getUrl().substring(5), Main.editedPath, 16);
 
         for (String path : imagesPath) {
-            File image = Kmeans.start(folder.getPath() + "\\" + path,Main.editedPath,8);
-            double similarity = compareImagesUsingColorPalette(image.getPath(), originalPhoto.getUrl().substring(5));
+            File image2 = Kmeans.start(folder.getPath() + "\\" + path, Main.editedPath, 16);
+            double similarity = compareImagesUsingColorPalette(image2.getPath(), image1.getPath());
             similarity = getTwoDigits(similarity);
             System.out.println(path);
             System.out.println("Similarity: " + similarity);
             System.out.println("-----------------------------");
-
-            vBox.getChildren().add(new Text("Similarity: " + similarity));
-            ImageView img = new ImageView(new Image("file:" + folder.getPath() + "\\" + path));
-            img.setFitHeight(200);
-            img.setFitWidth(500);
-            vBox.getChildren().add(img);
+            if (similarity >= 0.4) {
+                vBox.getChildren().add(new Text("Similarity: " + similarity));
+                ImageView img = new ImageView(new Image("file:" + folder.getPath() + "\\" + path));
+                img.setFitHeight(200);
+                img.setFitWidth(500);
+                vBox.getChildren().add(img);
+            }
 
 
         }

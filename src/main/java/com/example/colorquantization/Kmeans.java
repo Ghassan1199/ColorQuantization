@@ -26,10 +26,10 @@ public class Kmeans {
             List<Color> colors = new ArrayList<>(getHashColors(image));
             System.out.println("analays stage done");
 
-            java.util.List<Color> centroids = getInitialCentroids(k, colors);
+            List<Color> centroids = getInitialCentroids(k, colors);
             boolean done = false;
             while (!done) {
-                java.util.List<java.util.List<Color>> clusters = new ArrayList<>();
+                List<List<Color>> clusters = new ArrayList<>();
                 for (int i = 0; i < k; i++) {
                     // add a k list in clusters list and that number ok k index we choose it
                     clusters.add(new ArrayList<>());
@@ -38,6 +38,7 @@ public class Kmeans {
                     int closestCentroidIndex = getClosestCentroidIndex(color, centroids);
                     clusters.get(closestCentroidIndex).add(color);
                 }
+
                 List<Color> newCentroids = new ArrayList<>();
                 for (List<Color> cluster : clusters) {
                     if (cluster.size() == 0) {

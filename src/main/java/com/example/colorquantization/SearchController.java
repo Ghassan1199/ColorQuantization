@@ -9,7 +9,6 @@ import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -82,14 +81,13 @@ public class SearchController {
             System.out.println(path);
             System.out.println("Similarity: " + similarity);
             System.out.println("-----------------------------");
-            if(similarity>=0.4){
+            if (similarity >= 0.4) {
                 vBox.getChildren().add(new Text("Similarity: " + similarity));
                 ImageView img = new ImageView(new Image("file:" + folder.getPath() + "\\" + path));
                 img.setFitHeight(200);
                 img.setFitWidth(500);
                 vBox.getChildren().add(img);
             }
-
 
 
         }
@@ -162,32 +160,6 @@ public class SearchController {
         return ColorPalette.compareTwoImages(palette1, palette2);
 
     }
-
-
-    static int[] MakeColorHistogram(BufferedImage image) {
-        int[] histogram = new int[256];
-
-        int width = image.getWidth();
-        int height = image.getHeight();
-
-        for (int y = 0; y < height; y++) {
-            for (int x = 0; x < width; x++) {
-                int rgb = image.getRGB(x, y);
-
-                int red = (rgb >> 16) & 0xFF;
-                int green = (rgb >> 8) & 0xFF;
-                int blue = rgb & 0xFF;
-
-                int index = (red + green + blue) / 3;
-
-
-                histogram[index]++;
-            }
-        }
-
-        return histogram;
-    }
-
 
     private static Double getTwoDigits(Double input) {
         String result = String.format("%.2f", input);

@@ -100,11 +100,7 @@ public class ColorPalette {
     static boolean isSimilar(Color co1, Color co2) {
         float[] c1 = rgbToHsv(co1);
         float[] c2 = rgbToHsv(co2);
-        if (Math.abs(c1[0] - c2[0]) <= 5 && Math.abs(c1[1] - c2[1]) <= 5 && Math.abs(c1[2] - c2[2]) <= 5) {
-            return true;
-        } else {
-            return false;
-        }
+        return Math.abs(c1[0] - c2[0]) <= 5 && Math.abs(c1[1] - c2[1]) <= 5 && Math.abs(c1[2] - c2[2]) <= 5;
     }
 
     public static float[] rgbToHsv(Color rgb) {

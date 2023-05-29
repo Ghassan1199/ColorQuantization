@@ -15,13 +15,14 @@ public class ColorHistogram {
     public int[] greenHistogram = new int[numBins];
     public int[] blueHistogram = new int[numBins];
 
+    public int[] histogram = new int[numBins];
+
     ColorHistogram(String inputImagePath) throws IOException {
         File inputFile = new File(inputImagePath);
         BufferedImage inputImage = ImageIO.read(inputFile);
         for (int y = 0; y < inputImage.getHeight(); y++) {
             for (int x = 0; x < inputImage.getWidth(); x++) {
                 // Get the color values for the pixel at (x,y)
-                Color pixel = new Color(inputImage.getRGB(x, y));
                 int rgb = inputImage.getRGB(x, y);
                 int red = (rgb >> 16) & 0xFF;
                 int green = (rgb >> 8) & 0xFF;
@@ -31,6 +32,9 @@ public class ColorHistogram {
                 redHistogram[red]++;
                 greenHistogram[green]++;
                 blueHistogram[blue]++;
+
+                int index = (red + green + blue) / 3;
+                histogram[index]++;
             }
         }
         for (int i = 0; i < redHistogram.length; i++) {
@@ -130,6 +134,31 @@ public class ColorHistogram {
         }
 
         return totalPixels;
+    }
+
+    public double compareHistograms(ColorHistogram histogram1, ColorHistogram histogram2) {
+
+        double result = 0;
+        int sum = 0;
+
+        for (int i = 0; i < histogram1.histogram.length; i++) {
+
+            double a = histogram1.histogram[i] - histogram2.histogram[i];
+            double b = histogram1.histogram[i] + histogram2.histogram[i];
+
+            if (b > 0) {
+                result += (a * a) / b;
+            }
+            sum += histogram1.histogram[i] + histogram2.histogram[i];
+
+        }
+
+        result = result / sum;
+
+        result = (1 - result) * 100;
+
+        return result / 100;
+
     }
 
 

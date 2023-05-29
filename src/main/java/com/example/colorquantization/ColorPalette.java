@@ -90,15 +90,10 @@ public class ColorPalette {
     static public double compareTwoImages(ColorPalette image1, ColorPalette image2) {
         int count = 0;
         for (int i = 0; i < image2.colorArray.size(); i++) {
-            for (int j = 0; j < image1.colorArray.size(); j++) {
-                if (image1.colorArray.get(j).equals(image2.colorArray.get(i))) {
-                    count++;
-                    break;
-                }
-            }
-
-
+            if (image1.colorSet.contains(image2.colorArray.get(i)))
+                count++;
         }
+
         return (double) count / ((image1.colorArray.size() + image2.colorArray.size()) / 2);
     }
 

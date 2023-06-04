@@ -20,5 +20,6 @@
                 <VBox fx:id="vBox" prefHeight="750.0" prefWidth="767.0" />
             </content>
         </ScrollPane>
+      <Button layoutX="263.0" layoutY="93.0" mnemonicParsing="false" onAction="#searchUsingColors" text="Search Using Color" />
     </children>
 </AnchorPane>

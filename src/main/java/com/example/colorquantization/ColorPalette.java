@@ -11,7 +11,8 @@ import java.util.HashSet;
 public class ColorPalette {
     HashSet<Color> colorSet = new HashSet<>();
     ArrayList<Color> colorArray = new ArrayList<>();
-
+    HashMapColor colorMap = new HashMapColor();
+    int pixels;
 
     public ColorPalette(String path) throws IOException {
         File imageFile = new File(path);
@@ -20,11 +21,17 @@ public class ColorPalette {
         // Loop through each pixel in the reduced image
         int width = reducedImage.getWidth();
         int height = reducedImage.getHeight();
+        pixels = height * width;
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
                 int rgb = reducedImage.getRGB(x, y);
                 Color color = new Color(rgb);
-
+                if (colorMap.containsKey(color) && colorMap.get(color)!=null) {
+                    int temp = colorMap.get(color) + 1;
+                    colorMap.replace(color, temp);
+                }else{
+                    colorMap.put(color,1);
+                }
                 // Add the RGB value to the HashSet
                 colorSet.add(color);
             }
@@ -62,7 +69,6 @@ public class ColorPalette {
         });
     }
 
-
     public void createColorPalette() throws IOException, InterruptedException {
         BufferedImage image = new BufferedImage(1280, 1280, BufferedImage.TYPE_BYTE_INDEXED);
         int x = 0;
@@ -97,10 +103,14 @@ public class ColorPalette {
         return (double) count / ((image1.colorArray.size() + image2.colorArray.size()) / 2);
     }
 
-    static boolean isSimilar(Color co1, Color co2) {
-        float[] c1 = rgbToHsv(co1);
-        float[] c2 = rgbToHsv(co2);
-        return Math.abs(c1[0] - c2[0]) <= 5 && Math.abs(c1[1] - c2[1]) <= 5 && Math.abs(c1[2] - c2[2]) <= 5;
+    static public double compareTwoImages(ColorPalette image1, ArrayList<Color> colors) {
+        int count = 0;
+        for (Color color : colors) {
+            if (image1.colorSet.contains(color))
+                count+=image1.colorMap.get(color);
+        }
+
+        return (double) count/ image1.pixels;
     }
 
     public static float[] rgbToHsv(Color rgb) {

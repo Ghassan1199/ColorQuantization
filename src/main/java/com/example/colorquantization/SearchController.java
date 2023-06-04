@@ -1,14 +1,20 @@
 package com.example.colorquantization;
 
 import javafx.fxml.FXML;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.ColorPicker;
+import javafx.scene.control.ListView;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
+import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -18,7 +24,13 @@ import java.util.Objects;
 
 public class SearchController {
 
+    private ListView<String> colorListView;
+    private ColorPicker colorPicker;
+    private Stage searchStage;
+
+
     Image originalPhoto;
+    ArrayList<Color> colorArrayList = new ArrayList<>();
     @FXML
     private ImageView ogPhoto;
     @FXML
@@ -145,6 +157,79 @@ public class SearchController {
 
     }
 
+    @FXML
+    protected void searchUsingColors() {
+        try {
+            colorPicker = new ColorPicker();
+            colorListView = new ListView<>();
+
+            Button addButton = new Button("Add Color");
+            addButton.setOnAction(e -> addColorToList());
+            Button searchButton = new Button("Search");
+            searchButton.setOnAction(e -> searchUsingColor());
+
+            HBox controlBox = new HBox(colorPicker, addButton, searchButton);
+            VBox root = new VBox(controlBox, colorListView);
+            Scene scene = new Scene(root, 300, 200);
+
+            searchStage = new Stage();
+            searchStage.setTitle("Multi-Color Picker");
+            searchStage.setScene(scene);
+            searchStage.show();
+
+        } catch (Exception e) {
+
+        }
+
+    }
+
+
+    public void searchUsingColor() {
+        try {
+            DirectoryChooser directoryChooser = new DirectoryChooser();
+            directoryChooser.setTitle("choose the directory");
+            directoryChooser.setInitialDirectory(new File(Main.ImagesPath));
+            File folder = directoryChooser.showDialog(new Stage());
+
+            if (folder == null) {
+                System.out.println("Choose a Directory ");
+                return;
+            }
+
+            List<String> imagesPath = new ArrayList<>();
+
+            List<File> listOfFiles = new ArrayList<>(List.of(Objects.requireNonNull(folder.listFiles())));
+            for (File file : listOfFiles) {
+                int index = file.getName().lastIndexOf('.');
+                String extension = file.getName().substring(index + 1);
+                if (extension.equals("png") || extension.equals("jpg")) {
+                    imagesPath.add(file.getName());
+                }
+            }
+
+            for (String path : imagesPath) {
+                File image2 = UniformColor.start(folder.getPath() + "\\" + path, Main.editedPath, 4);
+                double similarity = compareImagesUsingColorPalette(image2.getPath(), colorArrayList);
+                similarity = getTwoDigits(similarity);
+                System.out.println(path);
+                System.out.println("Similarity: " + similarity);
+                System.out.println("-----------------------------");
+                if (similarity > 0.5) {
+                    vBox.getChildren().add(new Text("Similarity: " + similarity));
+                    ImageView img = new ImageView(new Image("file:" + folder.getPath() + "\\" + path));
+                    img.setFitHeight(200);
+                    img.setFitWidth(500);
+                    vBox.getChildren().add(img);
+                }
+
+            }
+            colorArrayList.clear();
+            searchStage.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
     public double compareImagesUsingHistogram(String image1, String image2) throws IOException {
 
@@ -161,10 +246,31 @@ public class SearchController {
 
     }
 
+    public double compareImagesUsingColorPalette(String image1, ArrayList<Color> colors) throws IOException {
+        ColorPalette palette1 = new ColorPalette(image1);
+        return ColorPalette.compareTwoImages(palette1, colors);
+
+    }
+
     private static Double getTwoDigits(Double input) {
         String result = String.format("%.2f", input);
         return Double.parseDouble(result);
 
+    }
+
+    private void addColorToList() {
+        String colorString = getColorString(colorPicker.getValue());
+
+        colorListView.getItems().add(colorString);
+    }
+
+    private String getColorString(javafx.scene.paint.Color color) {
+        int red = (int) (color.getRed() * 255);
+        int green = (int) (color.getGreen() * 255);
+        int blue = (int) (color.getBlue() * 255);
+        Color c = new Color(red, green, blue);
+        colorArrayList.add(c);
+        return String.format("RGB: %d, %d, %d", red, green, blue);
     }
 
 

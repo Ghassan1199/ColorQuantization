@@ -7,14 +7,19 @@ import javafx.scene.control.ColorPicker;
 import javafx.scene.control.ListView;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
+import javax.imageio.ImageIO;
 import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -24,9 +29,19 @@ import java.util.Objects;
 
 public class SearchController {
 
+    //faleh code
+    private Image originalImage;
+    private ImageView imageView;
+    private Rectangle cropRectangle;
+    private double rectangleOffsetX;
+    private double rectangleOffsetY;
+    private double mouseX;
+    private double mouseY;
+
     private ListView<String> colorListView;
     private ColorPicker colorPicker;
     private Stage searchStage;
+    private Stage cropStage;
 
 
     Image originalPhoto;
@@ -178,13 +193,14 @@ public class SearchController {
             searchStage.show();
 
         } catch (Exception e) {
+            e.printStackTrace();
 
         }
 
     }
 
-
     public void searchUsingColor() {
+
         try {
             DirectoryChooser directoryChooser = new DirectoryChooser();
             directoryChooser.setTitle("choose the directory");
@@ -271,6 +287,152 @@ public class SearchController {
         Color c = new Color(red, green, blue);
         colorArrayList.add(c);
         return String.format("RGB: %d, %d, %d", red, green, blue);
+    }
+
+    @FXML
+    protected void cropImage() {
+        try {
+            cropStage = new Stage();
+            BorderPane root = new BorderPane();
+            imageView = new ImageView();
+            cropRectangle = new Rectangle();
+
+            Button cropButton = new Button("Crop");
+            cropButton.setOnAction(e -> cropAndSaveImage(cropStage));
+
+            HBox toolbar = new HBox(cropButton);
+            root.setTop(toolbar);
+            root.setCenter(imageView);
+
+            root.getChildren().add(cropRectangle);
+
+            Scene scene = new Scene(root, 800, 600);
+            cropStage.setTitle("Image Crop");
+            cropStage.setScene(scene);
+            cropStage.show();
+
+            loadImage(cropStage);
+            setupCropRectangle();
+            addMouseHandlers();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void loadImage(Stage primaryStage) {
+
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Select an Image");
+        fileChooser.setInitialDirectory(new File(System.getProperty("user.dir") + "\\Images"));
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.gif"));
+        File imageFile = fileChooser.showOpenDialog(primaryStage);
+
+        if (imageFile != null) {
+            originalImage = new Image(Objects.requireNonNull(imageFile.toURI().toString()));
+            imageView.setImage(originalImage);
+            imageView.setFitWidth(originalImage.getWidth());
+            imageView.setFitHeight(originalImage.getHeight());
+        } else {
+            primaryStage.close();
+        }
+    }
+
+    private void setupCropRectangle() {
+        cropRectangle.setStroke(javafx.scene.paint.Color.RED);
+        cropRectangle.setStrokeWidth(2);
+        cropRectangle.setFill(javafx.scene.paint.Color.rgb(255, 0, 0, 0.1));
+        cropRectangle.setMouseTransparent(true);
+    }
+
+    private void addMouseHandlers() {
+        imageView.setOnMousePressed(this::handleMousePressed);
+        imageView.setOnMouseDragged(this::handleMouseDragged);
+    }
+
+    private void handleMousePressed(MouseEvent event) {
+        mouseX = event.getX();
+        mouseY = event.getY();
+
+        if (event.isSecondaryButtonDown()) {
+            rectangleOffsetX = cropRectangle.getX() - mouseX;
+            rectangleOffsetY = cropRectangle.getY() - mouseY;
+        } else {
+            cropRectangle.setX(mouseX);
+            cropRectangle.setY(mouseY);
+            cropRectangle.setWidth(0);
+            cropRectangle.setHeight(0);
+        }
+    }
+
+    private void handleMouseDragged(MouseEvent event) {
+        double newMouseX = event.getX();
+        double newMouseY = event.getY();
+
+        if (event.isSecondaryButtonDown()) {
+            cropRectangle.setX(newMouseX + rectangleOffsetX);
+            cropRectangle.setY(newMouseY + rectangleOffsetY);
+        } else {
+            double width = newMouseX - mouseX;
+            double height = newMouseY - mouseY;
+
+            cropRectangle.setWidth(width);
+            cropRectangle.setHeight(height);
+        }
+    }
+
+    private void cropAndSaveImage(Stage primaryStage) {
+        double x = cropRectangle.getX();
+        double y = cropRectangle.getY();
+        double width = cropRectangle.getWidth();
+        double height = cropRectangle.getHeight();
+
+        if (width <= 0 || height <= 0 || x < 0 || y < 0 || x + width > originalImage.getWidth() ||
+                y + height > originalImage.getHeight()) {
+            return;
+        }
+
+        // Calculate the coordinates and dimensions for cropping
+        int cropX = (int) Math.round(x);
+        int cropY = (int) Math.round(y);
+        int cropWidth = (int) Math.round(width);
+        int cropHeight = (int) Math.round(height);
+
+        // Create a new BufferedImage with the cropped region
+        BufferedImage croppedImage = new BufferedImage(cropWidth, cropHeight, BufferedImage.TYPE_INT_ARGB);
+
+        for (int destY = 0, srcY = cropY; destY < cropHeight; destY++, srcY++) {
+            for (int destX = 0, srcX = cropX; destX < cropWidth; destX++, srcX++) {
+                javafx.scene.paint.Color color = originalImage.getPixelReader().getColor(srcX, srcY);
+                int rgba = (int) (color.getRed() * 255) << 16 |
+                        (int) (color.getGreen() * 255) << 8 |
+                        (int) (color.getBlue() * 255) |
+                        (int) (color.getOpacity() * 255) << 24;
+                croppedImage.setRGB(destX, destY, rgba);
+            }
+        }
+
+        // Show folder chooser dialog for selecting the output folder
+        DirectoryChooser directoryChooser = new DirectoryChooser();
+        File selectedDirectory = directoryChooser.showDialog(primaryStage);
+        if (selectedDirectory == null) {
+            return; // No directory selected, exit without saving
+        }
+
+        // Construct the output file path using the selected directory and a fixed filename
+        String outputFileName = "cropped.png";
+        File outputFile = new File(selectedDirectory, outputFileName);
+
+        // Save the cropped image
+        try {
+            ImageIO.write(croppedImage, "png", outputFile);
+            originalPhoto = new Image("file:" + outputFile.getPath());
+            ogPhoto.setImage(originalPhoto);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        primaryStage.close();
     }
 
 

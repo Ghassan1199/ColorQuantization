@@ -26,11 +26,11 @@ public class ColorPalette {
             for (int x = 0; x < width; x++) {
                 int rgb = reducedImage.getRGB(x, y);
                 Color color = new Color(rgb);
-                if (colorMap.containsKey(color) && colorMap.get(color)!=null) {
+                if (colorMap.containsKey(color)) {
                     int temp = colorMap.get(color) + 1;
                     colorMap.replace(color, temp);
-                }else{
-                    colorMap.put(color,1);
+                } else {
+                    colorMap.put(color, 1);
                 }
                 // Add the RGB value to the HashSet
                 colorSet.add(color);
@@ -38,7 +38,7 @@ public class ColorPalette {
         }
         // Convert the HashSet to an array
         colorArray.addAll(colorSet);
-        // Sort the array by RGB values
+        // Sort the array by HSV values
         colorArray.sort((o1, o2) -> {
             float[] hsv1 = rgbToHsv(o1);
             float[] hsv2 = rgbToHsv(o2);
@@ -76,6 +76,13 @@ public class ColorPalette {
         int recHeight = 1280;
 
         for (Color color : this.colorArray) {
+            System.out.println("---------------------------------------------");
+            System.out.println("Color number : " + this.colorArray.indexOf(color));
+            float[] h = rgbToHsv(color);
+            System.out.println(h[0] + " : Hue");
+            System.out.println(h[1] + " : Sat");
+            System.out.println(h[2] + " : Bright");
+
             for (int i = 0; i < rectWidth; i++) {
                 for (int j = 0; j < recHeight; j++) {
                     image.setRGB(j, x + i, color.getRGB());
@@ -84,6 +91,7 @@ public class ColorPalette {
             x += rectWidth;
 
         }
+
         ImageIO.write(image, "png", new File("colorPalette.png"));
         File file = new File("colorPalette.png");
         String[] commands = {
@@ -106,10 +114,12 @@ public class ColorPalette {
     static public double compareTwoImages(ColorPalette image1, ArrayList<Color> colors) {
         int count = 0;
         for (Color color : colors) {
-            if (image1.colorSet.contains(color))
-                count+=image1.colorMap.get(color);
-        }
+            if (image1.colorMap.containsKey(color)){
+                count += image1.colorMap.get(color);
+                System.out.println(count);
+            }
 
+        }
         return (double) count/ image1.pixels;
     }
 

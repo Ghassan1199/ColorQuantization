@@ -14,7 +14,7 @@ public class UniformColor {
 
         File imageFile = new File(originalImagePath);
         BufferedImage image1 = ImageIO.read(imageFile);
-        BufferedImage image = resize(image1, 800, 600);
+        BufferedImage image = resize(image1, 1280, 720);
         int width = image.getWidth();
         int height = image.getHeight();
         int[] pixels = image.getRGB(0, 0, width, height, null, 0, width);

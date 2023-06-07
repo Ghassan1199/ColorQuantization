@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
@@ -15,15 +16,15 @@
                 <Image url="@pics/noIMG.png" />
             </image>
         </ImageView>
-        <Button layoutX="263.0" layoutY="14.0" mnemonicParsing="false" onAction="#searchUsingColorPalette" text="Color Palette" />
-        <Button layoutX="263.0" layoutY="54.0" mnemonicParsing="false" onAction="#searchUsingColorHistogram" text="Color Histogram" />
+        <Button layoutX="85.0" layoutY="300.0" mnemonicParsing="false" onAction="#searchUsingColorPalette" text="Search" />
 
         <ScrollPane layoutX="492.0" layoutY="23.0" prefHeight="760.0" prefWidth="770.0">
             <content>
                 <VBox fx:id="vBox" prefHeight="750.0" prefWidth="767.0" />
             </content>
         </ScrollPane>
-      <Button layoutX="263.0" layoutY="93.0" mnemonicParsing="false" onAction="#searchUsingColors" text="Search Using Color" />
-      <Button layoutX="263.0" layoutY="135.0" mnemonicParsing="false" onAction="#cropImage" text="Use a croped Image" />
+      <Button layoutX="315.0" layoutY="14.0" mnemonicParsing="false" onAction="#openSearchUsingColorWindow" text="Search Using Color" />
+      <Button layoutX="103.0" layoutY="14.0" mnemonicParsing="false" onAction="#cropImage" text="Use a croped Image" />
+      <ListView fx:id="colors" layoutX="273.0" layoutY="54.0" prefHeight="211.0" prefWidth="200.0" />
     </children>
 </AnchorPane>

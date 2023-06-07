@@ -12,10 +12,10 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Rectangle;
-import javafx.scene.text.Text;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javafx.util.Pair;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -29,7 +29,6 @@ import java.util.Objects;
 
 public class SearchController {
 
-    //faleh code
     private Image originalImage;
     private ImageView imageView;
     private Rectangle cropRectangle;
@@ -47,9 +46,13 @@ public class SearchController {
     Image originalPhoto;
     ArrayList<Color> colorArrayList = new ArrayList<>();
     @FXML
+    ListView<String> colors;
+    @FXML
     private ImageView ogPhoto;
     @FXML
     private VBox vBox;
+
+    private final ArrayList<Pair<ImageView, Double>> ImageViewList = new ArrayList<>();
 
 
     @FXML
@@ -58,7 +61,6 @@ public class SearchController {
         fileChooser.setTitle("Select an Image");
         fileChooser.setInitialDirectory(new File(System.getProperty("user.dir") + "\\Images"));
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.gif"));
-
 
         try {
             File file = fileChooser.showOpenDialog(new Stage());
@@ -73,17 +75,16 @@ public class SearchController {
 
     @FXML
     protected void searchUsingColorHistogram() throws IOException {
+
         if (originalPhoto == null) {
             System.out.println("select a photo first");
             return;
         }
-        DirectoryChooser directoryChooser = new DirectoryChooser();
-        directoryChooser.setTitle("choose the directory");
-        directoryChooser.setInitialDirectory(new File(Main.ImagesPath));
-        File folder = directoryChooser.showDialog(new Stage());
+
+        File folder = openDirectory();
 
         if (folder == null) {
-            System.out.println("Choose a Directory ");
+            System.out.println("Choose A Directory");
             return;
         }
 
@@ -109,32 +110,43 @@ public class SearchController {
             System.out.println("Similarity: " + similarity);
             System.out.println("-----------------------------");
             if (similarity >= 0.4) {
-                vBox.getChildren().add(new Text("Similarity: " + similarity));
                 ImageView img = new ImageView(new Image("file:" + folder.getPath() + "\\" + path));
                 img.setFitHeight(200);
                 img.setFitWidth(500);
-                vBox.getChildren().add(img);
+                ImageViewList.add(new Pair<>(img, similarity));
+                img.setOnMouseClicked(e -> {
+                    String[] commands = {
+                            "cmd.exe", "/c", "start", "\"DummyTitle\"", "\"" + folder.getPath() + "\\" + path + "\""
+                    };
+                    try {
+                        Process p = Runtime.getRuntime().exec(commands);
+                        p.waitFor();
+                    } catch (Exception ex) {
+                        throw new RuntimeException(ex);
+                    }
+
+                });
             }
 
 
         }
+        addImagesToVBox();
+
 
     }
 
     @FXML
     protected void searchUsingColorPalette() throws IOException {
+
         if (originalPhoto == null) {
             System.out.println("select a photo first");
             return;
         }
 
-        DirectoryChooser directoryChooser = new DirectoryChooser();
-        directoryChooser.setTitle("choose the directory");
-        directoryChooser.setInitialDirectory(new File(Main.ImagesPath));
-        File folder = directoryChooser.showDialog(new Stage());
+        File folder = openDirectory();
 
         if (folder == null) {
-            System.out.println("Choose a Directory ");
+            System.out.println("Choose A Directory");
             return;
         }
 
@@ -159,21 +171,92 @@ public class SearchController {
             System.out.println(path);
             System.out.println("Similarity: " + similarity);
             System.out.println("-----------------------------");
-            if (similarity >= 0.85) {
-                vBox.getChildren().add(new Text("Similarity: " + similarity));
+
+            if (similarity >= 0.75) {
                 ImageView img = new ImageView(new Image("file:" + folder.getPath() + "\\" + path));
                 img.setFitHeight(200);
                 img.setFitWidth(500);
-                vBox.getChildren().add(img);
+                img.setOnMouseClicked(e -> {
+                    String[] commands = {
+                            "cmd.exe", "/c", "start", "\"DummyTitle\"", "\"" + folder.getPath() + "\\" + path + "\""
+                    };
+                    try {
+                        Process p = Runtime.getRuntime().exec(commands);
+                        p.waitFor();
+                    } catch (Exception ex) {
+                        throw new RuntimeException(ex);
+                    }
+
+                });
+                ImageViewList.add(new Pair<>(img, similarity));
             }
 
 
         }
 
+        addImagesToVBox();
+
+
+    }
+
+
+    public void searchUsingColor() throws IOException {
+
+        searchStage.close();
+
+        File folder = openDirectory();
+
+        if (folder == null) {
+            System.out.println("Choose A Directory");
+            return;
+        }
+
+        List<String> imagesPath = new ArrayList<>();
+
+        List<File> listOfFiles = new ArrayList<>(List.of(Objects.requireNonNull(folder.listFiles())));
+        for (File file : listOfFiles) {
+            int index = file.getName().lastIndexOf('.');
+            String extension = file.getName().substring(index + 1);
+            if (extension.equals("png") || extension.equals("jpg")) {
+                imagesPath.add(file.getName());
+            }
+        }
+
+        for (String path : imagesPath) {
+            File image2 = UniformColor.start(folder.getPath() + "\\" + path, Main.editedPath, 4);
+            double similarity = compareUsingColors(image2.getPath(), colorArrayList);
+            similarity = getTwoDigits(similarity);
+            System.out.println(path);
+            System.out.println("Similarity: " + similarity);
+            System.out.println("-----------------------------");
+            if (similarity > 0.5) {
+                ImageView img = new ImageView(new Image("file:" + folder.getPath() + "\\" + path));
+                img.setFitHeight(200);
+                img.setFitWidth(500);
+                img.setOnMouseClicked(e -> {
+                    String[] commands = {
+                            "cmd.exe", "/c", "start", "\"DummyTitle\"", "\"" + folder.getPath() + "\\" + path + "\""
+                    };
+                    try {
+                        Process p = Runtime.getRuntime().exec(commands);
+                        p.waitFor();
+                    } catch (Exception ex) {
+                        throw new RuntimeException(ex);
+                    }
+
+                });
+                ImageViewList.add(new Pair<>(img, similarity));
+            }
+        }
+
+        colorArrayList.clear();
+
+        addImagesToVBox();
+
     }
 
     @FXML
-    protected void searchUsingColors() {
+    protected void openSearchUsingColorWindow() {
         try {
             colorPicker = new ColorPicker();
             colorListView = new ListView<>();
@@ -181,7 +264,13 @@ public class SearchController {
             Button addButton = new Button("Add Color");
             addButton.setOnAction(e -> addColorToList());
             Button searchButton = new Button("Search");
-            searchButton.setOnAction(e -> searchUsingColor());
+            searchButton.setOnAction(e -> {
+                try {
+                    searchUsingColor();
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
+            });
 
             HBox controlBox = new HBox(colorPicker, addButton, searchButton);
             VBox root = new VBox(controlBox, colorListView);
@@ -199,54 +288,6 @@ public class SearchController {
 
     }
 
-    public void searchUsingColor() {
-
-        try {
-            DirectoryChooser directoryChooser = new DirectoryChooser();
-            directoryChooser.setTitle("choose the directory");
-            directoryChooser.setInitialDirectory(new File(Main.ImagesPath));
-            File folder = directoryChooser.showDialog(new Stage());
-
-            if (folder == null) {
-                System.out.println("Choose a Directory ");
-                return;
-            }
-
-            List<String> imagesPath = new ArrayList<>();
-
-            List<File> listOfFiles = new ArrayList<>(List.of(Objects.requireNonNull(folder.listFiles())));
-            for (File file : listOfFiles) {
-                int index = file.getName().lastIndexOf('.');
-                String extension = file.getName().substring(index + 1);
-                if (extension.equals("png") || extension.equals("jpg")) {
-                    imagesPath.add(file.getName());
-                }
-            }
-
-            for (String path : imagesPath) {
-                File image2 = UniformColor.start(folder.getPath() + "\\" + path, Main.editedPath, 4);
-                double similarity = compareImagesUsingColorPalette(image2.getPath(), colorArrayList);
-                similarity = getTwoDigits(similarity);
-                System.out.println(path);
-                System.out.println("Similarity: " + similarity);
-                System.out.println("-----------------------------");
-                if (similarity > 0.5) {
-                    vBox.getChildren().add(new Text("Similarity: " + similarity));
-                    ImageView img = new ImageView(new Image("file:" + folder.getPath() + "\\" + path));
-                    img.setFitHeight(200);
-                    img.setFitWidth(500);
-                    vBox.getChildren().add(img);
-                }
-
-            }
-            colorArrayList.clear();
-            searchStage.close();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
     public double compareImagesUsingHistogram(String image1, String image2) throws IOException {
 
         ColorHistogram histogram1 = new ColorHistogram(image1);
@@ -262,10 +303,9 @@ public class SearchController {
 
     }
 
-    public double compareImagesUsingColorPalette(String image1, ArrayList<Color> colors) throws IOException {
+    public double compareUsingColors(String image1, ArrayList<Color> colors) throws IOException {
         ColorPalette palette1 = new ColorPalette(image1);
-        return ColorPalette.compareTwoImages(palette1, colors);
-
+        return ColorPalette.compareColors(palette1, colors);
     }
 
     private static Double getTwoDigits(Double input) {
@@ -278,6 +318,7 @@ public class SearchController {
         String colorString = getColorString(colorPicker.getValue());
 
         colorListView.getItems().add(colorString);
+        colors.getItems().add(colorString);
     }
 
     private String getColorString(javafx.scene.paint.Color color) {
@@ -291,33 +332,30 @@ public class SearchController {
 
     @FXML
     protected void cropImage() {
-        try {
-            cropStage = new Stage();
-            BorderPane root = new BorderPane();
-            imageView = new ImageView();
-            cropRectangle = new Rectangle();
 
-            Button cropButton = new Button("Crop");
-            cropButton.setOnAction(e -> cropAndSaveImage(cropStage));
+        cropStage = new Stage();
+        BorderPane root = new BorderPane();
+        imageView = new ImageView();
+        cropRectangle = new Rectangle();
 
-            HBox toolbar = new HBox(cropButton);
-            root.setTop(toolbar);
-            root.setCenter(imageView);
+        Button cropButton = new Button("Crop");
+        cropButton.setOnAction(e -> cropAndSaveImage(cropStage));
 
-            root.getChildren().add(cropRectangle);
+        HBox toolbar = new HBox(cropButton);
+        root.setTop(toolbar);
+        root.setCenter(imageView);
 
-            Scene scene = new Scene(root, 800, 600);
-            cropStage.setTitle("Image Crop");
-            cropStage.setScene(scene);
-            cropStage.show();
+        root.getChildren().add(cropRectangle);
 
-            loadImage(cropStage);
-            setupCropRectangle();
-            addMouseHandlers();
+        Scene scene = new Scene(root, 800, 600);
+        cropStage.setTitle("Image Crop");
+        cropStage.setScene(scene);
+        cropStage.show();
 
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        loadImage(cropStage);
+        setupCropRectangle();
+        addMouseHandlers();
+
     }
 
     private void loadImage(Stage primaryStage) {
@@ -433,6 +471,24 @@ public class SearchController {
             e.printStackTrace();
         }
         primaryStage.close();
+    }
+
+    public void addImagesToVBox() {
+        ImageViewList.sort(
+                (o1, o2) ->
+                        (int) (o1.getValue() - o2.getValue())
+        );
+
+        for (Pair<ImageView, Double> imageViewDoublePair : ImageViewList) {
+            vBox.getChildren().add(imageViewDoublePair.getKey());
+        }
+    }
+
+    private File openDirectory() {
+        DirectoryChooser directoryChooser = new DirectoryChooser();
+        directoryChooser.setTitle("choose the directory");
+        directoryChooser.setInitialDirectory(new File(Main.ImagesPath));
+        return directoryChooser.showDialog(new Stage());
     }
 
 

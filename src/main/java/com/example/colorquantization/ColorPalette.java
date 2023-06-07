@@ -111,7 +111,7 @@ public class ColorPalette {
         return (double) count / ((image1.colorArray.size() + image2.colorArray.size()) / 2);
     }
 
-    static public double compareTwoImages(ColorPalette image1, ArrayList<Color> colors) {
+    static public double compareColors(ColorPalette image1, ArrayList<Color> colors) {
         int count = 0;
         for (Color color : colors) {
             if (image1.colorMap.containsKey(color)){

@@ -37,7 +37,6 @@ public class Main extends Application {
     }
 
     BufferedImage oldImage;
-
     Image selectedImage;
     Image newImage;
     File newImageFile;
@@ -57,7 +56,32 @@ public class Main extends Application {
         scene = new Scene(root, screenWidth / 2, screenHeight / 2);
 
         original = (ImageView) scene.lookup("#original");
+        original.setOnMouseClicked(e -> {
+            try {
+                String[] commands = {
+                        "cmd.exe", "/c", "start", "\"DummyTitle\"", "\"" + selectedImage.getUrl() + "\""
+                };
+
+
+                Process p = Runtime.getRuntime().exec(commands);
+                p.waitFor();
+            } catch (Exception ignored) {
+            }
+        });
+
         edited = (ImageView) scene.lookup("#edited");
+        edited.setOnMouseClicked(e -> {
+            try {
+                String[] commands = {
+                        "cmd.exe", "/c", "start", "\"DummyTitle\"", "\"" + newImageFile.getPath() + "\""
+                };
+
+                Process p = Runtime.getRuntime().exec(commands);
+                p.waitFor();
+            } catch (Exception ignored) {
+            }
+        });
+
         addImageButton = (Button) scene.lookup("#addImage");
         applyButton = (Button) scene.lookup("#applyButton");
         colorPaletteBtn = (Button) scene.lookup("#colorPaletteBtn");

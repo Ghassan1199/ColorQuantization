@@ -1,11 +1,13 @@
 package com.example.colorquantization;
 
 import javafx.application.Application;
+import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -27,8 +29,8 @@ public class Main extends Application {
     static final String originalPath = System.getProperty("user.dir") + "\\src\\main\\resources\\com\\example\\colorquantization\\pics\\originals\\";
     static final String editedPath = System.getProperty("user.dir") + "\\src\\main\\resources\\com\\example\\colorquantization\\pics\\Edited\\";
     static final String ImagesPath = System.getProperty("user.dir") + "\\Images";
-    final float screenWidth = Toolkit.getDefaultToolkit().getScreenSize().width;
-    final float screenHeight = Toolkit.getDefaultToolkit().getScreenSize().height;
+
+
 
     enum Algorithms {
         K_MEANS,
@@ -41,11 +43,19 @@ public class Main extends Application {
     Image newImage;
     File newImageFile;
     Scene scene;
-    TextField numberId;
-    Button addImageButton, applyButton, saveImageButton, colorPaletteBtn, histogramBtn, searchBtn;
-    ImageView original, edited;
+    @FXML
+    private TextField numberId;
+    @FXML
+    private Button addImageButton, applyButton, saveImageButton, colorPaletteBtn, histogramBtn, searchBtn;
+    @FXML
+    private ImageView original, edited;
     Parent root;
-    ChoiceBox<Algorithms> choiceBox;
+    @FXML
+    private ChoiceBox<Algorithms> choiceBox;
+    @FXML
+    public Label ogSize;
+    @FXML
+    public Label editedSize;
 
 
     @Override
@@ -53,9 +63,11 @@ public class Main extends Application {
         System.out.println(System.getProperty("user.dir"));
         FXMLLoader fxmlLoader = new FXMLLoader(Main.class.getResource("main-view.fxml"));
         root = fxmlLoader.load();
-        scene = new Scene(root, screenWidth / 2, screenHeight / 2);
-
+        scene = new Scene(root, 1280, 720);
+        ogSize = (Label) scene.lookup("#ogSize");
+        editedSize = (Label) scene.lookup("#editedSize");
         original = (ImageView) scene.lookup("#original");
+
         original.setOnMouseClicked(e -> {
             try {
                 String[] commands = {
@@ -218,6 +230,7 @@ public class Main extends Application {
                     try {
                         newImageFile = UniformColor.start(imgPath, editedPath + Algorithms.UNIFORM_COLOR.name() + "\\", targetColor);
                         newImage = new Image("file:" + newImageFile.getPath());
+
                     } catch (IOException ex) {
                         throw new RuntimeException(ex);
                     }
@@ -226,6 +239,9 @@ public class Main extends Application {
             }
             long elapsedTime = System.nanoTime() - startTime;
             System.out.println("Time to run  " + a + " is :" + elapsedTime / 1000000000);
+
+            long size = newImageFile.getAbsoluteFile().length()/1024;
+            editedSize.setText(size + " KB");
 
             edited.setImage(newImage);
         });
@@ -249,6 +265,8 @@ public class Main extends Application {
                 selectedImage = new Image("file:" + file.getPath());
                 saveOldImage(file);
                 original.setImage(selectedImage);
+                long size = file.getAbsoluteFile().length()/(1024);
+                ogSize.setText(size + " KB");
 
             } catch (Exception ex) {
                 ex.printStackTrace();

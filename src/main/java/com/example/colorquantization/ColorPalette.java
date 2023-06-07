@@ -116,7 +116,6 @@ public class ColorPalette {
         for (Color color : colors) {
             if (image1.colorMap.containsKey(color)){
                 count += image1.colorMap.get(color);
-                System.out.println(count);
             }
 
         }

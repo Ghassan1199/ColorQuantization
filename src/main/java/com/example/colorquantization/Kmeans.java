@@ -20,11 +20,11 @@ public class Kmeans {
             // Load the image
             File imageFile = new File(originalImagePath);
             BufferedImage image = ImageIO.read(imageFile);
-            System.out.println("reading image is done");
+
 
             // Perform color quantization with k-means
             List<Color> colors = new ArrayList<>(getHashColors(image));
-            System.out.println("analays stage done");
+
 
             List<Color> centroids = getInitialCentroids(k, colors);
             boolean done = false;

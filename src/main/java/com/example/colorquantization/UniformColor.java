@@ -6,11 +6,12 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 public class UniformColor {
 
-    public static File start(String originalImagePath, String newImagePath,int targetColor) throws IOException {
+    public static File start(String originalImagePath, String newImagePath, int targetColor) throws IOException {
 
         File imageFile = new File(originalImagePath);
         BufferedImage image1 = ImageIO.read(imageFile);
@@ -20,19 +21,16 @@ public class UniformColor {
         int[] pixels = image.getRGB(0, 0, width, height, null, 0, width);
 
         // Build a list of distinct colors in the image
-        List<Color> colors = new ArrayList<>();
+        HashSet<Color> colors = new HashSet<>();
         for (int pixel : pixels) {
             Color color = new Color(pixel);
-            if (!colors.contains(color)) {
-                colors.add(color);
-            }
+            colors.add(color);
         }
-
         // If the number of colors in the image is less than or equal to the target number,
         // just return the original image
         if (colors.size() <= targetColor) {
             System.out.println("The Image is still the same \n" +
-                    "enter more numbers ");
+                    "enter lesser numbers ");
             return imageFile;
         }
 

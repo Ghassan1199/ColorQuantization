@@ -16,7 +16,6 @@ public class MedianCut {
 
         File imageFile = new File(originalImagePath);
         BufferedImage image = ImageIO.read(imageFile);
-        System.out.println("reading image is done");
 
         // Step 1: Get the list of pixels in the image
         int width = image.getWidth();
@@ -72,6 +71,7 @@ public class MedianCut {
     }
 
     public static List<Color> medianCut(List<int[]> pixelList, int targetColorCount) {
+
         List<Color> palette = new ArrayList<>();
 
         // Step 1: Create a color cube that encloses all the pixels in the image
@@ -135,7 +135,6 @@ public class MedianCut {
                     blue += pixel[2];
                     count++;
                 }
-                System.out.println(count);
                 red /= count;
                 green /= count;
                 blue /= count;

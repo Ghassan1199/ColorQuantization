@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
+import static com.example.colorquantization.UniformColor.resize;
+
 
 public class Kmeans {
 
@@ -19,9 +21,8 @@ public class Kmeans {
         try {
             // Load the image
             File imageFile = new File(originalImagePath);
-            BufferedImage image = ImageIO.read(imageFile);
-
-
+            BufferedImage image1 = ImageIO.read(imageFile);
+            BufferedImage image = resize(image1, 1280, 720);
             // Perform color quantization with k-means
             List<Color> colors = new ArrayList<>(getHashColors(image));
 

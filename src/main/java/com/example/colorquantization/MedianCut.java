@@ -10,12 +10,15 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
+import static com.example.colorquantization.UniformColor.resize;
+
 public class MedianCut {
 
     public static File reduceColors(String originalImagePath, int targetColorCount,String newImagePath) throws IOException {
 
         File imageFile = new File(originalImagePath);
-        BufferedImage image = ImageIO.read(imageFile);
+        BufferedImage image1 = ImageIO.read(imageFile);
+        BufferedImage image = resize(image1, 1280, 720);
 
         // Step 1: Get the list of pixels in the image
         int width = image.getWidth();

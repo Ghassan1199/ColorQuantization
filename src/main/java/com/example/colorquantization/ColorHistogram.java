@@ -38,13 +38,13 @@ public class ColorHistogram {
             }
         }
         for (int i = 0; i < redHistogram.length; i++) {
-            redHistogram[i] /= 128;
+            redHistogram[i] /= 512;
         }
         for (int i = 0; i < greenHistogram.length; i++) {
-            greenHistogram[i] /= 128;
+            greenHistogram[i] /= 512;
         }
         for (int i = 0; i < blueHistogram.length; i++) {
-            blueHistogram[i] /= 128;
+            blueHistogram[i] /= 512;
         }
 
     }
@@ -57,7 +57,7 @@ public class ColorHistogram {
         }
 
         // Create a new image to draw the histogram on
-        BufferedImage histogramImage = new BufferedImage(768, maxCount, BufferedImage.TYPE_BYTE_INDEXED);
+        BufferedImage histogramImage = new BufferedImage(1280, maxCount, BufferedImage.TYPE_BYTE_INDEXED);
         Graphics2D g2d = histogramImage.createGraphics();
         g2d.setColor(Color.WHITE);
         g2d.fillRect(0, 0, histogramImage.getWidth(), histogramImage.getHeight());

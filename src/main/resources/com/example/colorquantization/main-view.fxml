@@ -38,6 +38,7 @@
         <Button fx:id="searchBtn" layoutX="598.0" layoutY="467.0" mnemonicParsing="false" text="Search" />
         <Label fx:id="ogSize" layoutX="266.0" layoutY="540.0" text="" />
         <Label fx:id="editedSize" layoutX="1015.0" layoutY="540.0" />
+      <Label fx:id="timeToRun" layoutX="525.0" layoutY="207.0" />
 
     </children>
 </Pane>

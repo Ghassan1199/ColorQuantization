@@ -17,11 +17,12 @@ import javafx.stage.Stage;
 import org.controlsfx.control.action.Action;
 
 import javax.imageio.ImageIO;
-import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.Objects;
+
+import static com.example.colorquantization.UniformColor.resize;
 
 
 public class Main extends Application {
@@ -29,7 +30,6 @@ public class Main extends Application {
     static final String originalPath = System.getProperty("user.dir") + "\\src\\main\\resources\\com\\example\\colorquantization\\pics\\originals\\";
     static final String editedPath = System.getProperty("user.dir") + "\\src\\main\\resources\\com\\example\\colorquantization\\pics\\Edited\\";
     static final String ImagesPath = System.getProperty("user.dir") + "\\Images";
-
 
 
     enum Algorithms {
@@ -56,6 +56,8 @@ public class Main extends Application {
     public Label ogSize;
     @FXML
     public Label editedSize;
+    @FXML
+    public Label timeToRun;
 
 
     @Override
@@ -66,7 +68,9 @@ public class Main extends Application {
         scene = new Scene(root, 1280, 720);
         ogSize = (Label) scene.lookup("#ogSize");
         editedSize = (Label) scene.lookup("#editedSize");
+        timeToRun = (Label) scene.lookup("#timeToRun");
         original = (ImageView) scene.lookup("#original");
+
 
         original.setOnMouseClicked(e -> {
             try {
@@ -238,9 +242,8 @@ public class Main extends Application {
                 }
             }
             long elapsedTime = System.nanoTime() - startTime;
-            System.out.println("Time to run  " + a + " is :" + elapsedTime / 1000000000);
-
-            long size = newImageFile.getAbsoluteFile().length()/1024;
+            timeToRun.setText("Time Taken : \n" + String.format("%.3f", (double) elapsedTime / 1000000000) + " Seconds");
+            long size = newImageFile.getAbsoluteFile().length() / 1024;
             editedSize.setText(size + " KB");
 
             edited.setImage(newImage);
@@ -265,7 +268,7 @@ public class Main extends Application {
                 selectedImage = new Image("file:" + file.getPath());
                 saveOldImage(file);
                 original.setImage(selectedImage);
-                long size = file.getAbsoluteFile().length()/(1024);
+                long size = new File(originalPath + "OG" + file.getName()).getAbsoluteFile().length() / (1024);
                 ogSize.setText(size + " KB");
 
             } catch (Exception ex) {
@@ -279,7 +282,8 @@ public class Main extends Application {
     public void saveOldImage(File file) {
 
         try {
-            oldImage = ImageIO.read(file);
+            BufferedImage image1 = ImageIO.read(file);
+            oldImage = resize(image1, 1280, 720);
             ImageIO.write(oldImage, "png", new File(originalPath + "OG" + file.getName()));
 
         } catch (IOException ex) {

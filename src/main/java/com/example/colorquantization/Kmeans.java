@@ -6,6 +6,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 
@@ -96,15 +97,18 @@ public class Kmeans {
         return colors;
     }
 
-    private static List<Color> getInitialCentroids(int k, List<Color> colors) {// this function take a color list of input image and return a list  contain a clusterd colors by spicefic way
-        java.util.List<Color> centroids = new ArrayList<>();
+    private static List<Color> getInitialCentroids(int k, List<Color> colors) {
+        List<Color> centroids = new ArrayList<>();
+        List<Color> shuffledColors = new ArrayList<>(colors);
+        Collections.shuffle(shuffledColors);
+
         for (int i = 0; i < k; i++) {
-            int randomIndex = (int) (Math.random() * colors.size()); /// we get a random number and * with colors list size for generate a cluster of color and store it in randomindex
-            centroids.add(colors.get(randomIndex));//// using randomIndex variable to get color from colors list and after that we have a clusterd colors
+            centroids.add(shuffledColors.get(i));
         }
+
         return centroids;
     }
-
+    
     private static int getClosestCentroidIndex(Color color, List<Color> centroids) {// we get a closest color for cussent color and that by comparing between all distance that we get between the source
         // color and all clustered colors and choose the smallest one
         int closestCentroidIndex = 0;

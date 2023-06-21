@@ -30,7 +30,7 @@ public class HashMapColor extends HashMap<Color, Integer> {
     static boolean isSimilar(Color co1, Color co2) {
         float[] c1 = rgbToHsv(co1);
         float[] c2 = rgbToHsv(co2);
-        return (Math.abs(c1[0] - c2[0]) <= 50) && (Math.abs(c1[1] - c2[1]) <= 50) && (Math.abs(c1[2] - c2[2]) <= 50);
+        return (Math.abs(c1[0] - c2[0]) <= 10) && (Math.abs(c1[1] - c2[1]) <= 40) && (Math.abs(c1[2] - c2[2]) <= 40);
     }
 
 }

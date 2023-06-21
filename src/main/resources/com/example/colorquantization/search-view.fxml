@@ -16,7 +16,7 @@
                 <Image url="@pics/noIMG.png" />
             </image>
         </ImageView>
-        <Button layoutX="85.0" layoutY="300.0" mnemonicParsing="false" onAction="#searchUsingColorPalette" text="Search" />
+        <Button layoutX="85.0" layoutY="300.0" mnemonicParsing="false" onAction="#searchUsingColorHistogram" text="Search" />
 
         <ScrollPane layoutX="492.0" layoutY="23.0" prefHeight="760.0" prefWidth="770.0">
             <content>

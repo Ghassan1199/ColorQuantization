@@ -5,9 +5,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
+import java.util.*;
 import java.util.List;
 
 import static com.example.colorquantization.UniformColor.resize;
@@ -32,6 +30,8 @@ public class Kmeans {
             boolean done = false;
             while (!done) {
                 List<List<Color>> clusters = new ArrayList<>();
+                if(k==0)
+                    k=16;
                 for (int i = 0; i < k; i++) {
                     // add a k list in clusters list and that number ok k index we choose it
                     clusters.add(new ArrayList<>());
@@ -99,12 +99,37 @@ public class Kmeans {
 
     private static List<Color> getInitialCentroids(int k, List<Color> colors) {
         List<Color> centroids = new ArrayList<>();
-        List<Color> shuffledColors = new ArrayList<>(colors);
-        Collections.shuffle(shuffledColors);
+        if(k==0){
+            // Manually specify the initial centroid colors
+            Color[] fixedColors = new Color[] {
+                    Color.RED,     // Example fixed centroid color 1
+                    Color.GREEN,   // Example fixed centroid color 2
+                    Color.BLUE ,    // Example fixed centroid color 3
+                    Color.BLACK,
+                    Color.CYAN,
+                    Color.DARK_GRAY,
+                    Color.LIGHT_GRAY,
+                    Color.YELLOW,
+                    Color.PINK,
+                    Color.WHITE,
+                    Color.ORANGE,
+                    Color.MAGENTA,
+                    Color.GRAY,
+                    // Add more colors as needed
+            };
 
-        for (int i = 0; i < k; i++) {
-            centroids.add(shuffledColors.get(i));
+            centroids.addAll(Arrays.asList(fixedColors));
+        }else{
+            List<Color> shuffledColors = new ArrayList<>(colors);
+            Collections.shuffle(shuffledColors);
+
+            for (int i = 0; i < k; i++) {
+                centroids.add(shuffledColors.get(i));
+            }
         }
+
+
+
 
         return centroids;
     }

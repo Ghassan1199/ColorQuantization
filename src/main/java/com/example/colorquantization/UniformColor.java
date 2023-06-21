@@ -11,7 +11,7 @@ import java.util.List;
 
 public class UniformColor {
 
-    public static File start(String originalImagePath, String newImagePath, int targetColor) throws IOException {
+    public static File start(String originalImagePath, String newImagePath, int numberOfRegions) throws IOException {
 
         File imageFile = new File(originalImagePath);
         BufferedImage image1 = ImageIO.read(imageFile);
@@ -28,14 +28,14 @@ public class UniformColor {
         }
         // If the number of colors in the image is less than or equal to the target number,
         // just return the original image
-        if (colors.size() <= targetColor) {
+        if (colors.size() <= numberOfRegions) {
             System.out.println("The Image is still the same \n" +
                     "enter lesser numbers ");
             return imageFile;
         }
 
         // Divide the color space into a fixed number of regions
-        int regionSize = 256 / targetColor;
+        int regionSize = 256 / numberOfRegions;
         List<Color> palette = new ArrayList<>();
         for (int r = 0; r < 256; r += regionSize) {
             for (int g = 0; g < 256; g += regionSize) {

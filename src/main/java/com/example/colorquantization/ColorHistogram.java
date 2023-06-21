@@ -136,30 +136,6 @@ public class ColorHistogram {
         return totalPixels;
     }
 
-    public double compareHistograms(ColorHistogram histogram1, ColorHistogram histogram2) {
-
-        double result = 0;
-        int sum = 0;
-
-        for (int i = 0; i < histogram1.histogram.length; i++) {
-
-            double a = histogram1.histogram[i] - histogram2.histogram[i];
-            double b = histogram1.histogram[i] + histogram2.histogram[i];
-
-            if (b > 0) {
-                result += (a * a) / b;
-            }
-            sum += histogram1.histogram[i] + histogram2.histogram[i];
-
-        }
-
-        result = result / sum;
-
-        result = (1 - result) * 100;
-
-        return result / 100;
-
-    }
 
 
 }

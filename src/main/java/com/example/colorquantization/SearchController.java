@@ -74,67 +74,65 @@ public class SearchController {
         }
     }
 
-//    @FXML
-//    protected void searchUsingColorHistogram() throws IOException {
-//
-//        if (originalPhoto == null) {
-//            System.out.println("select a photo first");
-//            return;
-//        }
-//
-//        File folder = openDirectory();
-//
-//        if (folder == null) {
-//            System.out.println("Choose A Directory");
-//            return;
-//        }
-//
-//        List<String> imagesPath = new ArrayList<>();
-//
-//        List<File> listOfFiles = new ArrayList<>(List.of(Objects.requireNonNull(folder.listFiles())));
-//        for (File file : listOfFiles) {
-//            int index = file.getName().lastIndexOf('.');
-//            String extension = file.getName().substring(index + 1);
-//            if (extension.equals("png") || extension.equals("jpg")) {
-//                imagesPath.add(file.getName());
-//            }
-//        }
-//
-//        System.out.println(originalPhoto.getUrl());
-//        File image1 = UniformColor.start(originalPhoto.getUrl().substring(5), Main.editedPath, 4);
-//
-//        for (String path : imagesPath) {
-//            File image2 = UniformColor.start(folder.getPath() + "\\" + path, Main.editedPath, 4);
-//            double similarity = compareImagesUsingHistogram(image1.getPath(), image2.getPath());
-//            similarity = getTwoDigits(similarity);
-//            System.out.println(path);
-//            System.out.println("Similarity: " + similarity);
-//            System.out.println("-----------------------------");
-//            if (similarity >= 0.4) {
-//                ImageView img = new ImageView(new Image("file:" + folder.getPath() + "\\" + path));
-//                img.setFitHeight(200);
-//                img.setFitWidth(500);
-//                ImageViewList.add(new Pair<>(img, similarity));
-//                img.setOnMouseClicked(e -> {
-//                    String[] commands = {
-//                            "cmd.exe", "/c", "start", "\"DummyTitle\"", "\"" + folder.getPath() + "\\" + path + "\""
-//                    };
-//                    try {
-//                        Process p = Runtime.getRuntime().exec(commands);
-//                        p.waitFor();
-//                    } catch (Exception ex) {
-//                        throw new RuntimeException(ex);
-//                    }
-//
-//                });
-//            }
-//
-//
-//        }
-//        addImagesToVBox();
-//
-//
-//    }
+    @FXML
+    protected void searchUsingColorHistogram() throws IOException {
+        ImageViewList.clear();
+        if (originalPhoto == null) {
+            System.out.println("select a photo first");
+            return;
+        }
+
+        File folder = openDirectory();
+
+        if (folder == null) {
+            System.out.println("Choose A Directory");
+            return;
+        }
+
+        List<String> imagesPath = new ArrayList<>();
+
+        List<File> listOfFiles = new ArrayList<>(List.of(Objects.requireNonNull(folder.listFiles())));
+        for (File file : listOfFiles) {
+            int index = file.getName().lastIndexOf('.');
+            String extension = file.getName().substring(index + 1);
+            if (extension.equals("png") || extension.equals("jpg")) {
+                imagesPath.add(file.getName());
+            }
+        }
+
+        System.out.println(originalPhoto.getUrl());
+        File image1 = Kmeans.start(originalPhoto.getUrl().substring(5), Main.editedPath, 0);
+        ogPhoto.setImage(new Image("file:" + image1.getPath()));
+        for (String path : imagesPath) {
+            File image2 = Kmeans.start(folder.getPath() + "\\" + path, Main.editedPath, 0);
+            double similarity = compareImagesUsingHistogram(image2.getPath(), image1.getPath());
+            similarity = getTwoDigits(similarity);
+            System.out.println(path);
+            System.out.println("Similarity: " + similarity);
+            System.out.println("-----------------------------");
+
+            ImageView img = new ImageView(new Image("file:" + image2.getPath()));
+            img.setFitHeight(200);
+            img.setFitWidth(500);
+            img.setOnMouseClicked(e -> {
+                String[] commands = {
+                        "cmd.exe", "/c", "start", "\"DummyTitle\"", "\"" + folder.getPath() + "\\" + path + "\""
+                };
+                try {
+                    Process p = Runtime.getRuntime().exec(commands);
+                    p.waitFor();
+                } catch (Exception ex) {
+                    throw new RuntimeException(ex);
+                }
+
+            });
+            ImageViewList.add(new Pair<>(img, similarity));
+        }
+
+
+        addImagesToVBox();
+
+    }
 
     @FXML
     protected void searchUsingColorPalette() throws IOException {
@@ -286,13 +284,13 @@ public class SearchController {
 
     }
 
-//    public double compareImagesUsingHistogram(String image1, String image2) throws IOException {
-//
-//        ColorHistogram histogram1 = new ColorHistogram(image1);
-//        ColorHistogram histogram2 = new ColorHistogram(image2);
-//        return histogram2.calculateHistogramIntersection(histogram1, histogram2);
-//
-//    }
+    public double compareImagesUsingHistogram(String image1, String image2) throws IOException {
+
+        ColorHistogram histogram1 = new ColorHistogram(image1);
+        ColorHistogram histogram2 = new ColorHistogram(image2);
+        return histogram2.calculateHistogramIntersection(histogram1, histogram2);
+
+    }
 
     public double compareImagesUsingColorPalette(String image1, String image2) throws IOException {
         ColorPalette palette1 = new ColorPalette(image1);
@@ -472,6 +470,7 @@ public class SearchController {
     }
 
     public void addImagesToVBox() {
+        vBox.getChildren().clear();
         ImageViewList.sort(new Comparator<Pair<ImageView, Double>>() {
             @Override
             public int compare(Pair<ImageView, Double> o1, Pair<ImageView, Double> o2) {
@@ -483,7 +482,7 @@ public class SearchController {
         });
 
         for (Pair<ImageView, Double> imageViewDoublePair : ImageViewList) {
-            if (imageViewDoublePair.getValue() > 0.75)
+            if (imageViewDoublePair.getValue() > 0.5)
                 vBox.getChildren().add(imageViewDoublePair.getKey());
         }
     }

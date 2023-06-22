@@ -219,33 +219,31 @@ public class SearchController {
         }
 
         for (String path : imagesPath) {
-            File image2 = UniformColor.start(folder.getPath() + "\\" + path, Main.editedPath, 4);
+            File image2 = Kmeans.start(folder.getPath() + "\\" + path, Main.editedPath, 0);
             double similarity = compareUsingColors(image2.getPath(), colorArrayList);
             similarity = getTwoDigits(similarity);
             System.out.println(path);
             System.out.println("Similarity: " + similarity);
             System.out.println("-----------------------------");
-            if (similarity > 0.5) {
-                ImageView img = new ImageView(new Image("file:" + folder.getPath() + "\\" + path));
-                img.setFitHeight(200);
-                img.setFitWidth(500);
-                img.setOnMouseClicked(e -> {
-                    String[] commands = {
-                            "cmd.exe", "/c", "start", "\"DummyTitle\"", "\"" + folder.getPath() + "\\" + path + "\""
-                    };
-                    try {
-                        Process p = Runtime.getRuntime().exec(commands);
-                        p.waitFor();
-                    } catch (Exception ex) {
-                        throw new RuntimeException(ex);
-                    }
 
-                });
-                ImageViewList.add(new Pair<>(img, similarity));
-            }
+            ImageView img = new ImageView(new Image("file:" + image2.getPath()));
+            img.setFitHeight(200);
+            img.setFitWidth(500);
+            img.setOnMouseClicked(e -> {
+                String[] commands = {
+                        "cmd.exe", "/c", "start", "\"DummyTitle\"", "\"" + folder.getPath() + "\\" + path + "\""
+                };
+                try {
+                    Process p = Runtime.getRuntime().exec(commands);
+                    p.waitFor();
+                } catch (Exception ex) {
+                    throw new RuntimeException(ex);
+                }
+
+            });
+            ImageViewList.add(new Pair<>(img, similarity));
         }
 
-        colorArrayList.clear();
 
         addImagesToVBox();
 
